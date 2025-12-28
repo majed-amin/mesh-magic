@@ -16,7 +16,13 @@ export default defineNuxtConfig({
     "@nuxt/hints",
     "shadcn-nuxt",
     "@vueuse/nuxt",
+    "@nuxtjs/color-mode",
   ],
+
+  colorMode: {
+    classSuffix: "",
+  },
+
   shadcn: {
     /**
      * Prefix for all the imported component.
