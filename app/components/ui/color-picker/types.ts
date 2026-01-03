@@ -39,15 +39,10 @@ export type ColorPickerProps = {
 
 // Context
 export type ColorPickerContext = {
-  colorValue: Ref<ColorValue>;
-  hue: Ref<number>;
-  saturation: Ref<number>;
-  brightness: Ref<number>;
-  alpha: Ref<number>;
+  color: Ref<ColorValue>;
+  previewColor: Ref<ColorValue>;
   setColor: (color: ColorValue) => void;
-  setHue: (hue: number) => void;
-  setSaturationBrightness: (saturation: number, brightness: number) => void;
-  setAlpha: (alpha: number) => void;
+  emitColorChange: (color: ColorValue) => void;
 };
 
 // Injection key

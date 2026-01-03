@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Popover } from "../popover";
+import { parseColor } from "./color.utils";
 
 import {
   COLOR_PICKER_KEY,
@@ -7,15 +8,26 @@ import {
   type ColorValue,
 } from "./types";
 
-const color = ref<ColorValue>({
-  hex: "#ff0000",
-  hex8: "#ff0000ff",
-  rgb: { r: 255, g: 0, b: 0, a: 1 },
-  hsl: { h: 0, s: 100, l: 50, a: 1 },
-  hsv: { h: 0, s: 100, v: 100, a: 1 },
-});
+const props = withDefaults(
+  defineProps<{
+    color?: ColorValue;
+  }>(),
+  {
+    color: () => parseColor("#000"),
+  },
+);
+const colorRef = toRef(props.color);
+const colorPreviewRef = toRef(props.color);
 provide<ColorPickerContext>(COLOR_PICKER_KEY, {
-  colorValue: color,
+  color: colorRef,
+  previewColor: colorPreviewRef,
+  emitColorChange: (newColor: ColorValue) => {
+    console.log("[ROOT]: Color changed to:", newColor);
+  },
+  setColor: (newColor: ColorValue) => {
+    console.log("[ROOT]: Set color to:", newColor);
+    colorRef.value = newColor;
+  },
 });
 </script>
 

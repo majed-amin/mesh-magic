@@ -14,7 +14,7 @@ const color = inject<ColorPickerContext>(COLOR_PICKER_KEY);
 const colorValue = defineModel<string>({
   required: true,
   set(value) {
-    if (color) if (isHexColorValid(value)) color.colorValue.value.hex = value;
+    if (color) if (isHexColorValid(value)) color.color.value.hex = value;
     console.log("ColorPickerInput set to:", isHexColorValid(value), value);
   },
 });

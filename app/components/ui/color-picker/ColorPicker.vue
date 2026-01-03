@@ -1,45 +1,35 @@
 <script setup lang="ts">
-import ColorPickerRoot from "./ColorPickerRoot.vue";
-import ColorPickerBody from "./ColorPickerBody.vue";
-import ColorPickerPreview from "./ColorPickerPreview.vue";
-import ColorPickerHeader from "./ColorPickerHeader.vue";
-import ColorPickerInput from "./ColorPickerInput.vue";
+import {
+  ColorPickerRoot,
+  ColorPickerBody,
+  ColorPickerHeader,
+  ColorPickerPreview,
+  ColorPickerSaturation,
+} from ".";
 import type { ColorValue } from "./types";
+import { Color, parseColor } from "./color.utils";
 
-const color = ref<ColorValue>({
-  hex: "#ff0000",
-  rgb: { r: 255, g: 0, b: 0, a: 1 },
-  hsv: { h: 0, s: 100, v: 100, a: 1 },
-  oklch: {
-    a: 0,
-    c: 0,
-    h: 0,
-    l: 0,
-  },
-});
+const test = new Color("green");
+const color = ref<ColorValue>(parseColor(test));
 </script>
 
 <template>
-  <!-- <ClientOnly> -->
-  color.hex:{{ color.hex }}
-
-  <ColorPickerRoot>
+  <ColorPickerRoot :color>
     <ColorPickerPreview />
     <ColorPickerBody>
       <ColorPickerHeader>
-        <ColorPickerInput v-model="color.hex" class="w-24" />
+        <ColorPickerSaturation />
       </ColorPickerHeader>
 
       <!-- </ColorPickerHeader> -->
     </ColorPickerBody>
     <!-- <ColorPickerSwatches />
-        <ColorPickerSaturation />
+      <ColorPickerSaturation />
 
 
 
-        <ColorPickerHue />
-        <ColorPickerAlpha />
-        <ColorPickerInputs /> -->
+      <ColorPickerHue />
+      <ColorPickerAlpha />
+      <ColorPickerInputs /> -->
   </ColorPickerRoot>
-  <!-- </ClientOnly> -->
 </template>

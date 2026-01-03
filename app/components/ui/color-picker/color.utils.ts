@@ -53,11 +53,7 @@ export class Color {
   private _rgb: RgbColor;
 
   constructor(color: HexColor | RgbColor | HsvColor | OklchColor) {
-    const parsed = this.parseInput(color);
-    if (!parsed) {
-      throw new Error("Invalid color");
-    }
-    this._rgb = parsed;
+    this._rgb = this.parseInput(color) ?? { r: 0, g: 0, b: 0, a: 0 };
   }
 
   /**
@@ -70,8 +66,16 @@ export class Color {
   private parseInput(
     color: HexColor | RgbColor | HsvColor | OklchColor,
   ): RgbColor | null {
+    // Removed the unconditional SSR guard so hex/structured colors can be parsed on server.
     if (typeof color === "string") {
-      return this.hexToRgb(color);
+      // Try hex or shorthand hex first
+      const hexResult = this.hexToRgb(color);
+      if (hexResult) return hexResult;
+
+      // If not a valid hex, try resolving named color in browser only
+      const colorToHex = colorNameToHex(color);
+      if (!colorToHex) return null;
+      return this.hexToRgb(colorToHex);
     }
     if ("r" in color && "g" in color && "b" in color) {
       return color as RgbColor;
@@ -82,6 +86,7 @@ export class Color {
     if ("l" in color && "c" in color && "h" in color) {
       return this.oklchToRgb(color as OklchColor);
     }
+
     return null;
   }
 
@@ -245,17 +250,13 @@ export class Color {
  * Legacy support / Convenient short-hands
  */
 export const parseColor = (
-  color: HexColor | HsvColor | RgbColor | OklchColor,
-): ColorValue | null => {
-  try {
-    const c = new Color(color);
-    return {
-      hex: c.hex,
-      rgb: c.rgb,
-      hsv: c.hsv,
-      oklch: c.oklch,
-    };
-  } catch {
-    return null;
-  }
+  color: Color | HexColor | HsvColor | RgbColor | OklchColor,
+): ColorValue => {
+  const c = color instanceof Color ? color : new Color(color);
+  return {
+    hex: c.hex,
+    rgb: c.rgb,
+    hsv: c.hsv,
+    oklch: c.oklch,
+  };
 };

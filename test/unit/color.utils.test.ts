@@ -104,7 +104,8 @@ describe("Color Utilities", () => {
 
     it("should return fallback for invalid color instead of throwing", () => {
       // @ts-expect-error - testing invalid input
-      expect(() => new Color({ x: 1 })).toThrow();
+      const color = new Color({ x: 1 });
+      expect(color.rgb).toEqual({ r: 0, g: 0, b: 0, a: 0 });
     });
 
     it("should support static from method", () => {

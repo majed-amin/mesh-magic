@@ -110,6 +110,16 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@theme inline {
+  --color-c-picker-preview: var(--c-picker-preview);
+}
+:root {
+  --c-picker-preview: "transparent";
+}
+.dark {
+  --c-picker-preview: "transparent";
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
