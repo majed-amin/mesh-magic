@@ -5,6 +5,7 @@ import {
   ColorPickerHeader,
   ColorPickerPreview,
   ColorPickerSaturation,
+  ColorPickerHue,
 } from ".";
 import type { ColorValue } from "./types";
 import { Color, parseColor } from "./color.utils";
@@ -14,11 +15,12 @@ const color = ref<ColorValue>(parseColor(test));
 </script>
 
 <template>
-  <ColorPickerRoot :color>
+  <ColorPickerRoot v-model="color">
     <ColorPickerPreview />
     <ColorPickerBody>
       <ColorPickerHeader>
         <ColorPickerSaturation />
+        <ColorPickerHue />
       </ColorPickerHeader>
 
       <!-- </ColorPickerHeader> -->

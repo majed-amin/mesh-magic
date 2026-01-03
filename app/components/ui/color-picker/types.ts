@@ -39,9 +39,12 @@ export type ColorPickerProps = {
 
 // Context
 export type ColorPickerContext = {
+  hsv: Ref<HsvColor>;
   color: Ref<ColorValue>;
   previewColor: Ref<ColorValue>;
+  setHsv: (hsv: Partial<HsvColor>) => void;
   setColor: (color: ColorValue) => void;
+  setPreviewColor: (color: ColorValue) => void;
   emitColorChange: (color: ColorValue) => void;
 };
 

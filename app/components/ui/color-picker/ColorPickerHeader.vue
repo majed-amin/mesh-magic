@@ -8,7 +8,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div data-slot="color-picker-header" :class="cn(props.class)">
+  <div
+    data-slot="color-picker-header"
+    class="space-y-4"
+    :class="cn(props.class)"
+  >
     <slot />
   </div>
 </template>

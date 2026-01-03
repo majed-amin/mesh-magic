@@ -6,27 +6,78 @@ import {
   COLOR_PICKER_KEY,
   type ColorPickerContext,
   type ColorValue,
+  type HsvColor, // Assuming HsvColor is also from types
 } from "./types";
 
-const props = withDefaults(
-  defineProps<{
-    color?: ColorValue;
-  }>(),
-  {
-    color: () => parseColor("#000"),
-  },
+const color = defineModel<ColorValue>({ required: true });
+
+const emit = defineEmits<{
+  (e: "change", value: ColorValue): void;
+}>();
+
+// The interactive source of truth (preserves Hue/Saturation when V=0)
+const hsvRef = ref<HsvColor>(color.value.hsv);
+// The preview base color (the vibrant hue used for picker backgrounds)
+const previewColorRef = ref<ColorValue>(
+  parseColor({ ...color.value.hsv, s: 1, v: 1 }),
 );
-const colorRef = toRef(props.color);
-const colorPreviewRef = toRef(props.color);
+
+// Function to update the HSV state and sync others
+const updateHsv = (hsvUpdate: Partial<HsvColor>) => {
+  const newHsv = { ...hsvRef.value, ...hsvUpdate };
+  hsvRef.value = newHsv;
+
+  // Derive the new ColorValue from this HSV
+  const newColor = parseColor(newHsv);
+  color.value = newColor;
+
+  // We only update the preview color if Hue changed
+  if (hsvUpdate.h !== undefined) {
+    previewColorRef.value = parseColor({
+      h: hsvUpdate.h,
+      s: 1,
+      v: 1,
+      a: 1,
+    });
+  }
+
+  emit("change", newColor);
+};
+
+// Sync internal hsvRef when the model changes externally
+watch(
+  () => color.value,
+  (newVal) => {
+    // If it's materially different, update our high-precision reference
+    // but preserve Hue if it's a grayscale change
+    const incomingHsv = newVal.hsv;
+    if (incomingHsv.v > 0 && incomingHsv.s > 0) {
+      hsvRef.value = incomingHsv;
+    } else {
+      hsvRef.value = {
+        ...hsvRef.value,
+        a: incomingHsv.a,
+        v: incomingHsv.v,
+      };
+    }
+  },
+  { deep: true },
+);
+
 provide<ColorPickerContext>(COLOR_PICKER_KEY, {
-  color: colorRef,
-  previewColor: colorPreviewRef,
+  hsv: hsvRef,
+  color: color,
+  previewColor: previewColorRef,
+  setHsv: updateHsv,
   emitColorChange: (newColor: ColorValue) => {
-    console.log("[ROOT]: Color changed to:", newColor);
+    emit("change", newColor);
   },
   setColor: (newColor: ColorValue) => {
-    console.log("[ROOT]: Set color to:", newColor);
-    colorRef.value = newColor;
+    color.value = newColor;
+    hsvRef.value = newColor.hsv;
+  },
+  setPreviewColor: (newColor: ColorValue) => {
+    previewColorRef.value = newColor;
   },
 });
 </script>

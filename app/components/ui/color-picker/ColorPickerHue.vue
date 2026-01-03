@@ -1,54 +1,81 @@
 <script setup lang="ts">
 import { cn } from "~/lib/utils";
 import type { HTMLAttributes } from "vue";
+import { ref, computed } from "vue";
 import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";
+import { Color } from "./color.utils";
+import { useMouseInElement, useEventListener } from "@vueuse/core";
 
-const props = defineProps<{
-  class?: HTMLAttributes["class"];
-}>();
+const props = withDefaults(
+  defineProps<{
+    class?: HTMLAttributes["class"];
+    orientation?: "horizontal" | "vertical";
+  }>(),
+  {
+    class: "",
+    orientation: "horizontal",
+  },
+);
 
 const colorPickerContext = inject<ColorPickerContext>(COLOR_PICKER_KEY);
-const previewColor = computed(() => colorPickerContext?.previewColor.value);
+const currentPreviewColor = computed(
+  () => colorPickerContext?.previewColor.value,
+);
 
-const hueHex = computed(() => previewColor.value?.hex);
-const backgroundStyle = computed(() => ({
-  background: `linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)),
-  linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0)),
-  ${hueHex.value}`,
-}));
-
-const indicatorPos = computed(() => {
-  const hsv = colorPickerContext?.hsv.value;
-  if (!hsv) return { left: "50%", top: "50%" };
-  const s = clamp(hsv.s, 0, 1);
-  const v = clamp(hsv.v, 0, 1);
-  return {
-    left: `${s * 100}%`,
-    top: `${(1 - v) * 100}%`,
-  };
+// Generate a hue gradient across 0..360°
+const hueStops = computed(() => {
+  const stops: string[] = [];
+  for (let h = 0; h <= 360; h += 30) {
+    stops.push(new Color({ h, s: 1, v: 1, a: 1 }).hex);
+  }
+  return stops;
 });
 
-const saturationRef = ref<HTMLDivElement | null>(null);
+const backgroundStyle = computed(() => ({
+  backgroundImage: `linear-gradient(${
+    props.orientation === "horizontal" ? "to right" : "to bottom"
+  }, ${hueStops.value.join(", ")})`,
+}));
+
+// Indicator: position base on orientation
+const indicatorPos = computed(() => {
+  const h = currentPreviewColor.value?.hsv?.h ?? 0;
+  const percent = `${(Math.max(0, Math.min(360, h)) / 360) * 100}%`;
+  return props.orientation === "horizontal"
+    ? { left: percent, top: "50%" }
+    : { left: "50%", top: percent };
+});
+
+const hueRef = ref<HTMLDivElement | null>(null);
 const { elementX, elementY, elementWidth, elementHeight } =
-  useMouseInElement(saturationRef);
+  useMouseInElement(hueRef);
 const isDragging = ref(false);
+
 const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
-const updateColorFromPosition = () => {
+// Update hue from pointer position
+const updateHueFromPosition = () => {
   if (!colorPickerContext) return;
   const w = elementWidth.value ?? 0;
   const h = elementHeight.value ?? 0;
   if (!w || !h) return;
 
-  const s = clamp(elementX.value / w, 0, 1);
-  const v = clamp(1 - elementY.value / h, 0, 1);
+  let percent = 0;
+  if (props.orientation === "horizontal") {
+    percent = clamp(elementX.value, 0, w) / w;
+  } else {
+    percent = clamp(elementY.value, 0, h) / h;
+  }
 
-  colorPickerContext.setHsv({ s, v });
+  const hue = percent * 360;
+
+  // Update the interactive HSV state (maintains S/V/A)
+  colorPickerContext.setHsv({ h: hue });
 };
 
 const onPointerDown = (e?: PointerEvent) => {
   isDragging.value = true;
-  updateColorFromPosition();
+  updateHueFromPosition();
   if (e && (e.target as Element).setPointerCapture) {
     try {
       (e.target as Element).setPointerCapture((e as PointerEvent).pointerId);
@@ -72,15 +99,15 @@ const onPointerUp = (e?: PointerEvent) => {
 
 useEventListener(window, "pointermove", () => {
   if (!isDragging.value) return;
-  updateColorFromPosition();
+  updateHueFromPosition();
 });
 useEventListener(window, "pointerup", onPointerUp);
 </script>
 
 <template>
   <div
-    ref="saturationRef"
-    class="relative h-full cursor-crosshair overflow-hidden w-full aspect-square rounded-lg bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]"
+    ref="hueRef"
+    class="relative h-10 cursor-crosshair overflow-hidden w-full rounded bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]"
     :class="cn(props.class)"
     :style="backgroundStyle"
     @pointerdown="onPointerDown"
