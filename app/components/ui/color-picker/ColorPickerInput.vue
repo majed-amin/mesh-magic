@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 import { Input } from "../input";
 import type { HTMLAttributes } from "vue";
 import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";
-import { formatColor, parseColor } from "./color.utils";
+import { formatColor, parseColor, isValidColor } from "./color.utils";
 
 const props = defineProps<{
   class?: HTMLAttributes["class"];
@@ -16,15 +16,19 @@ if (!context)
 const { color, disabled, setColor, format } = context;
 
 const localValue = ref("");
+const isFocused = ref(false);
 
-// Sync local value when context color or format changes
+const currentFormat = computed(
+  () => format.value as "hex" | "rgb" | "hsv" | "oklch",
+);
+
+// Sync FROM global TO local (Context -> UI)
 watch(
-  [() => color.value, () => format.value],
-  ([newColor, newFormat]) => {
-    const formatted = formatColor(
-      newColor,
-      newFormat as "hex" | "rgb" | "hsv" | "oklch",
-    );
+  [() => color.value, currentFormat],
+  ([newColor, newFmt]) => {
+    if (isFocused.value) return;
+
+    const formatted = formatColor(newColor, newFmt);
     if (formatted.toLowerCase() !== localValue.value.toLowerCase()) {
       localValue.value = formatted;
     }
@@ -32,27 +36,38 @@ watch(
   { immediate: true, deep: true },
 );
 
-const handleInput = (e: Event) => {
-  const value = (e.target as HTMLInputElement).value;
-  localValue.value = value;
-  const parsed = parseColor(value);
-  if (parsed) {
-    // Only update if it's materially different to avoid jitter
-    if (
-      formatColor(parsed, format.value as "hex" | "rgb" | "hsv" | "oklch") !==
-      formatColor(color.value, format.value as "hex" | "rgb" | "hsv" | "oklch")
-    ) {
-      setColor(parsed);
+// Sync FROM local TO global (UI -> Context)
+watch(localValue, (val) => {
+  if (!isFocused.value) return;
+
+  const fmt = currentFormat.value;
+  if (isValidColor(val, fmt)) {
+    const parsed = parseColor(val);
+    if (parsed) {
+      // Avoid redundant updates by checking standardized string equality
+      const currentFormatted = formatColor(color.value, fmt);
+      const newFormatted = formatColor(parsed, fmt);
+
+      if (newFormatted.toLowerCase() !== currentFormatted.toLowerCase()) {
+        setColor(parsed);
+      }
     }
   }
+});
+
+const handleBlur = () => {
+  isFocused.value = false;
+  // Clean up on blur to ensure the input reflects the canonical global state
+  localValue.value = formatColor(color.value, currentFormat.value);
 };
 </script>
 
 <template>
   <Input
-    :value="localValue"
+    v-model="localValue"
     :disabled="disabled"
     :class="cn('font-mono', props.class)"
-    @input="handleInput"
+    @focus="isFocused = true"
+    @blur="handleBlur"
   />
 </template>

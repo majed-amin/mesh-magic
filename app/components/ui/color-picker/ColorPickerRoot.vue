@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<ColorPickerProps>(), {
   sideOffset: 4,
 });
 
-const colorModel = defineModel<ColorValue | string>({ required: true });
+const colorModel = defineModel<ColorValue | string>({ default: "#000000" });
 const openModel = defineModel<boolean>("open", { default: false });
 
 // Normalize the model to ColorValue

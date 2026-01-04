@@ -7,11 +7,16 @@ import {
   ColorPickerHue,
   ColorPickerArea,
   ColorPickerIndicator,
+  ColorPickerInput,
+  ColorPickerLabel,
+  ColorPickerSwatch,
+  ColorPickerSection,
+  ColorPickerRow,
 } from ".";
 import type { ColorValue, ColorPickerProps } from "./types";
 
 const props = defineProps<ColorPickerProps>();
-const modelValue = defineModel<ColorValue | string>({ required: true });
+const modelValue = defineModel<ColorValue | string>();
 const open = defineModel<boolean>("open", { default: false });
 
 const emit = defineEmits<{
@@ -46,18 +51,15 @@ const emit = defineEmits<{
         </ColorPickerArea>
       </ColorPickerSaturation>
 
-      <div class="flex flex-col gap-4">
+      <ColorPickerSection class="gap-4">
         <!-- Hue Slider -->
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between px-0.5">
-            <span
-              class="text-[11px] font-medium text-muted-foreground uppercase tracking-tight"
-              >Hue</span
-            >
-            <span class="text-[11px] font-mono text-muted-foreground"
-              >{{ Math.round(hsv.h) }}°</span
-            >
-          </div>
+        <ColorPickerSection>
+          <ColorPickerRow class="justify-between px-0.5">
+            <ColorPickerLabel>Hue</ColorPickerLabel>
+            <ColorPickerLabel class="font-mono normal-case">
+              {{ Math.round(hsv.h) }}°
+            </ColorPickerLabel>
+          </ColorPickerRow>
           <ColorPickerHue
             orientation="horizontal"
             class="h-3.5 rounded-full overflow-hidden"
@@ -71,23 +73,17 @@ const emit = defineEmits<{
               />
             </ColorPickerArea>
           </ColorPickerHue>
-        </div>
+        </ColorPickerSection>
 
         <!-- Input Section -->
-        <div class="space-y-1.5">
-          <span
-            class="text-[11px] font-medium text-muted-foreground uppercase tracking-tight"
-            >{{ currentFormat }}</span
-          >
-          <div class="flex gap-2">
-            <div
-              class="size-9 rounded-md border shrink-0 shadow-inner"
-              :style="{ backgroundColor: selectedColor.hex }"
-            />
+        <ColorPickerSection>
+          <ColorPickerLabel>{{ currentFormat }}</ColorPickerLabel>
+          <ColorPickerRow>
+            <ColorPickerSwatch />
             <ColorPickerInput class="h-9 text-xs" />
-          </div>
-        </div>
-      </div>
+          </ColorPickerRow>
+        </ColorPickerSection>
+      </ColorPickerSection>
 
       <!-- <slot name="extra" v-bind="{ hsv, color: selectedColor }" /> -->
     </ColorPickerBody>

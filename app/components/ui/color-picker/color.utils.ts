@@ -7,12 +7,44 @@ import type {
 } from "./types";
 
 /**
+ * Supported color format regexes
+ */
+export const HEX_REGEX =
+  /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{3})$/;
+export const RGB_REGEX =
+  /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/;
+export const HSV_REGEX =
+  /^hsva?\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*(?:,\s*([\d.]+)\s*)?\)$/;
+export const OKLCH_REGEX =
+  /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)\s*)?\)$/;
+
+/**
  * Validates whether a given string is a standard CSS hexadecimal color.
  */
 export const isHexColorValid = (hex: HexColor): boolean => {
-  const hexRegex =
-    /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{3})$/;
-  return hexRegex.test(hex);
+  return HEX_REGEX.test(hex);
+};
+
+/**
+ * Validates whether a given string matches a specific color format.
+ */
+export const isValidColor = (
+  value: string,
+  format: "hex" | "rgb" | "hsv" | "oklch",
+): boolean => {
+  const v = value.trim().toLowerCase();
+  switch (format) {
+    case "hex":
+      return HEX_REGEX.test(v);
+    case "rgb":
+      return RGB_REGEX.test(v);
+    case "hsv":
+      return HSV_REGEX.test(v);
+    case "oklch":
+      return OKLCH_REGEX.test(v);
+    default:
+      return false;
+  }
 };
 
 /**
@@ -76,10 +108,8 @@ export class Color {
       const hexResult = this.hexToRgb(trimmed);
       if (hexResult) return hexResult;
 
-      // Try RGB(A) functional notation: rgb(r, g, b) or rgba(r, g, b, a)
-      const rgbMatch = trimmed.match(
-        /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/,
-      );
+      // Try RGB(A) functional notation
+      const rgbMatch = trimmed.match(RGB_REGEX);
       if (rgbMatch) {
         return {
           r: parseInt(rgbMatch[1]!, 10),
@@ -89,10 +119,8 @@ export class Color {
         };
       }
 
-      // Try HSV(A) functional notation: hsv(h, s%, v%)
-      const hsvMatch = trimmed.match(
-        /^hsva?\(\s*([\d.]+)\s*,\s*([\d.]+)%?\s*,\s*([\d.]+)%?\s*(?:,\s*([\d.]+)\s*)?\)$/,
-      );
+      // Try HSV(A) functional notation
+      const hsvMatch = trimmed.match(HSV_REGEX);
       if (hsvMatch) {
         return this.hsvToRgb({
           h: parseFloat(hsvMatch[1]!),
@@ -102,10 +130,8 @@ export class Color {
         });
       }
 
-      // Try OKLCH notation: oklch(l c h / a)
-      const oklchMatch = trimmed.match(
-        /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)\s*)?\)$/,
-      );
+      // Try OKLCH notation
+      const oklchMatch = trimmed.match(OKLCH_REGEX);
       if (oklchMatch) {
         return this.oklchToRgb({
           l: parseFloat(oklchMatch[1]!),
