@@ -7,7 +7,7 @@ import {
   type ColorPickerContext,
   type ColorPickerProps,
   type ColorValue,
-  type HsvColor, // Assuming HsvColor is also from types
+  type HsvColor, 
 } from "./types";
 
 const props = withDefaults(defineProps<ColorPickerProps>(), {

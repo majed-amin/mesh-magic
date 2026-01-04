@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from "vue";
-import { useMouseInElement, useEventListener } from "@vueuse/core";
 import { cn } from "~/lib/utils";
 import type { HTMLAttributes } from "vue";
 import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";

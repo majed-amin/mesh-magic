@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { cn } from "~/lib/utils";
 import { PopoverContent } from "../popover";
-import type { HTMLAttributes } from "vue";
-
-import { inject, computed } from "vue";
 import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";
+import type { HTMLAttributes } from "vue";
 
 const props = defineProps<{
   class?: HTMLAttributes["class"];

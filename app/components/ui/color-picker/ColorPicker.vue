@@ -60,10 +60,7 @@ const emit = defineEmits<{
               {{ Math.round(hsv.h) }}°
             </ColorPickerLabel>
           </ColorPickerRow>
-          <ColorPickerHue
-            orientation="horizontal"
-            class="h-3.5 rounded-full overflow-hidden"
-          >
+          <ColorPickerHue orientation="horizontal" class="rounded-full">
             <ColorPickerArea @change="({ x }) => setHsv({ h: x * 360 })">
               <ColorPickerIndicator
                 :left="(hsv.h / 360) * 100"
@@ -80,7 +77,7 @@ const emit = defineEmits<{
           <ColorPickerLabel>{{ currentFormat }}</ColorPickerLabel>
           <ColorPickerRow>
             <ColorPickerSwatch />
-            <ColorPickerInput class="h-9 text-xs" />
+            <ColorPickerInput />
           </ColorPickerRow>
         </ColorPickerSection>
       </ColorPickerSection>
