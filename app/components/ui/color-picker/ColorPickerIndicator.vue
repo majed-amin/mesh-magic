@@ -13,6 +13,7 @@ const props = defineProps<{
 <template>
   <div
     role="presentation"
+    aria-hidden="true"
     class="absolute z-[1] -translate-x-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-white box-border pointer-events-none"
     :class="cn(props.class)"
     :style="{

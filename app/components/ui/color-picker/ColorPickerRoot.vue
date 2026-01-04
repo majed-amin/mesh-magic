@@ -7,12 +7,11 @@ import {
   type ColorPickerContext,
   type ColorPickerProps,
   type ColorValue,
-  type HsvColor, 
+  type HsvColor,
 } from "./types";
 
 const props = withDefaults(defineProps<ColorPickerProps>(), {
   format: "hex",
-  shape: "circle",
   disabled: false,
   disableAlpha: false,
   side: "bottom",
@@ -130,7 +129,7 @@ provide<ColorPickerContext>(COLOR_PICKER_KEY, {
   setPreviewColor,
   disabled: computed(() => props.disabled),
   disableAlpha: computed(() => props.disableAlpha),
-  shape: computed(() => props.shape),
+  open: computed(() => openModel.value),
   format: computed(() => props.format),
   popoverProps: {
     side: computed(() => props.side),

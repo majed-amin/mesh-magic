@@ -53,7 +53,7 @@ export type ColorPickerContext = {
   emitColorChange: (color: ColorValue) => void;
   disabled: Ref<boolean>;
   disableAlpha: Ref<boolean>;
-  shape: Ref<"square" | "circle">;
+  open: Ref<boolean>;
   format: Ref<string>;
   popoverProps: {
     side: Ref<"top" | "right" | "bottom" | "left" | undefined>;

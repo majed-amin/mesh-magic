@@ -66,6 +66,7 @@ const handleBlur = () => {
   <Input
     v-model="localValue"
     :disabled="disabled"
+    :aria-label="`${currentFormat.toUpperCase()} Color Value`"
     :class="cn('font-mono', props.class)"
     @focus="isFocused = true"
     @blur="handleBlur"

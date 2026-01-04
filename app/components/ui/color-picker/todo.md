@@ -127,15 +127,20 @@ Additional features for a better user experience.
 
 ---
 
-### 9. Accessibility
+### 9. Accessibility [DONE]
 
-- [ ] **ARIA Attributes**
+- [x] **ARIA Attributes**
   - role="slider" on pickers
   - aria-label descriptions
   - aria-valuenow, min, max
+  - aria-valuetext summaries
+  - Dynamic aria-expanded for trigger
 
-- [ ] **Focus Styles**
-  - Visible focus rings
+- [x] **Focus Styles**
+  - Visible focus rings for keyboard users
+
+- [x] **Keyboard Navigation**
+  - Arrow keys, Shift + Arrows, Home/End
 
 ---
 
@@ -316,7 +321,7 @@ Complex features requiring more implementation effort.
 3. ColorPickerSwatches.vue
 4. Touch & keyboard support
 5. Additional props (debounce, etc.)
-6. Accessibility improvements
+6. Accessibility improvements [DONE]
 
 ### Phase 3: Hard (Advanced)
 

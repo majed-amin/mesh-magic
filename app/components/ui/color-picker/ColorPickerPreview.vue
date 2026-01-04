@@ -12,7 +12,7 @@ const context = inject<ColorPickerContext>(COLOR_PICKER_KEY);
 if (!context)
   throw new Error("ColorPickerPreview must be used within ColorPickerRoot");
 
-const { color, disabled } = context;
+const { color, disabled, open } = context;
 
 const hex = computed(() => {
   return color.value.hex || "#000000";
@@ -23,6 +23,8 @@ const hex = computed(() => {
   <PopoverTrigger as-child :disabled="disabled">
     <Button
       aria-label="Select Color"
+      aria-haspopup="dialog"
+      :aria-expanded="open"
       variant="outline"
       :disabled="disabled"
       :class="

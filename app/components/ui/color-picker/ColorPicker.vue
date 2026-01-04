@@ -42,7 +42,13 @@ const emit = defineEmits<{
     <ColorPickerPreview />
     <ColorPickerBody>
       <ColorPickerSaturation class="overflow-hidden mb-2">
-        <ColorPickerArea @change="({ x, y }) => setHsv({ s: x, v: 1 - y })">
+        <ColorPickerArea
+          :x="hsv.s"
+          :y="1 - hsv.v"
+          label="Saturation and brightness"
+          :aria-value-text="`Saturation ${Math.round(hsv.s * 100)}%, Brightness ${Math.round(hsv.v * 100)}%`"
+          @change="({ x, y }) => setHsv({ s: x, v: 1 - y })"
+        >
           <ColorPickerIndicator
             :left="hsv.s * 100"
             :top="(1 - hsv.v) * 100"
@@ -62,7 +68,13 @@ const emit = defineEmits<{
             </ColorPickerLabel>
           </ColorPickerRow>
           <ColorPickerHue orientation="horizontal" class="h-3 rounded-full">
-            <ColorPickerArea @change="({ x }) => setHsv({ h: x * 360 })">
+            <ColorPickerArea
+              :x="hsv.h / 360"
+              label="Hue"
+              orientation="horizontal"
+              :aria-value-text="`${Math.round(hsv.h)}°`"
+              @change="({ x }) => setHsv({ h: x * 360 })"
+            >
               <ColorPickerIndicator
                 :left="(hsv.h / 360) * 100"
                 :top="50"
@@ -82,7 +94,13 @@ const emit = defineEmits<{
             </ColorPickerLabel>
           </ColorPickerRow>
           <ColorPickerAlpha orientation="horizontal" class="h-3 rounded-full">
-            <ColorPickerArea @change="({ x }) => setHsv({ a: x })">
+            <ColorPickerArea
+              :x="hsv.a"
+              label="Alpha"
+              orientation="horizontal"
+              :aria-value-text="`${Math.round(hsv.a * 100)}%`"
+              @change="({ x }) => setHsv({ a: x })"
+            >
               <ColorPickerIndicator
                 :left="hsv.a * 100"
                 :top="50"
@@ -102,8 +120,6 @@ const emit = defineEmits<{
           </ColorPickerRow>
         </ColorPickerSection>
       </ColorPickerSection>
-
-      <!-- <slot name="extra" v-bind="{ hsv, color: selectedColor }" /> -->
     </ColorPickerBody>
   </ColorPickerRoot>
 </template>
