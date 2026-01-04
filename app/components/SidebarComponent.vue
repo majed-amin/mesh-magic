@@ -14,7 +14,6 @@ import ColorPicker from "./ui/color-picker/ColorPicker.vue";
     <SidebarContent>
       <!-- Base color -->
       <ColorPicker
-        :disable-alpha="true"
         :align="'end'"
         :shape="'square'"
         :side="'bottom'"

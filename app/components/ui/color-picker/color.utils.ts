@@ -170,11 +170,16 @@ export class Color {
   }
   get hex(): HexColor {
     const { r, g, b, a } = this._rgb;
-    if (a === 0) return "#00000000";
     const redHex = r.toString(16).padStart(2, "0");
     const greenHex = g.toString(16).padStart(2, "0");
     const blueHex = b.toString(16).padStart(2, "0");
-    return `#${redHex}${greenHex}${blueHex}`;
+    const alphaHex =
+      a < 1
+        ? Math.round(a * 255)
+            .toString(16)
+            .padStart(2, "0")
+        : "";
+    return `#${redHex}${greenHex}${blueHex}${alphaHex}`;
   }
   get hsv(): HsvColor {
     const { r, g, b, a } = this._rgb;

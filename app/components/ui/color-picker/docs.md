@@ -36,7 +36,6 @@ Available on both `ColorPickerRoot` and the high-level `ColorPicker`.
 | `modelValue` | `string \| ColorValue` | `'#000000'` | The current color value. Supports HEX, RGB, HSV, and OKLCH strings. |
 | `format` | `'hex' \| 'rgb' \| 'hsv' \| 'oklch'` | `'hex'` | Determines the string format for `v-model` and the text input. |
 | `open` | `boolean` | `false` | Controls the open state of the popover. |
-| `shape` | `'square' \| 'circle'` | `'circle'` | The shape of the `ColorPickerPreview` (the trigger button). |
 | `disabled` | `boolean` | `false` | Disables all interactions with the picker. |
 | `disableAlpha` | `boolean` | `false` | Hides/disables alpha channel controls (where applicable). |
 
@@ -68,6 +67,7 @@ Use these to build your own custom layout:
 - **`ColorPickerBody`**: The popover container.
 - **`ColorPickerSaturation`**: The large 2D area for saturation and value adjustment.
 - **`ColorPickerHue`**: The rainbow slider for hue adjustment.
+- **`ColorPickerAlpha`**: A slider for transparency (alpha) adjustment with a checkered background.
 - **`ColorPickerArea`**: A low-level utility to handle mouse/touch interactions inside sliders or areas.
 - **`ColorPickerIndicator`**: The "ring" visual showing the current selection.
 - **`ColorPickerInput`**: A smart text input that reacts to the `format` prop.

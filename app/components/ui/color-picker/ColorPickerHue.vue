@@ -22,8 +22,7 @@ const backgroundStyle = computed(() => ({
 
 <template>
   <div
-    class="h-10 w-full rounded bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]"
-    :class="cn(props.class)"
+    :class="cn('w-full rounded relative overflow-hidden', props.class)"
     :style="backgroundStyle"
   >
     <slot />

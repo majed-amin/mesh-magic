@@ -12,7 +12,7 @@ const context = inject<ColorPickerContext>(COLOR_PICKER_KEY);
 if (!context)
   throw new Error("ColorPickerPreview must be used within ColorPickerRoot");
 
-const { color, disabled, shape } = context;
+const { color, disabled } = context;
 
 const hex = computed(() => {
   return color.value.hex || "#000000";
@@ -27,8 +27,7 @@ const hex = computed(() => {
       :disabled="disabled"
       :class="
         cn(
-          'size-9 p-0 border shadow-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
-          shape === 'circle' ? 'rounded-full' : 'rounded-md',
+          'size-9 p-0 border shadow-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden rounded-md',
           props.class,
         )
       "

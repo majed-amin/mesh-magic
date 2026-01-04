@@ -34,7 +34,6 @@ export type ColorValue = {
 export type ColorPickerProps = {
   modelValue?: ColorValue | string;
   format?: "hex" | "rgb" | "hsv" | "oklch";
-  shape?: "square" | "circle";
   disabled?: boolean;
   disableAlpha?: boolean;
   side?: "top" | "right" | "bottom" | "left";

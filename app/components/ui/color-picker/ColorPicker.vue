@@ -5,6 +5,7 @@ import {
   ColorPickerPreview,
   ColorPickerSaturation,
   ColorPickerHue,
+  ColorPickerAlpha,
   ColorPickerArea,
   ColorPickerIndicator,
   ColorPickerInput,
@@ -60,7 +61,7 @@ const emit = defineEmits<{
               {{ Math.round(hsv.h) }}°
             </ColorPickerLabel>
           </ColorPickerRow>
-          <ColorPickerHue orientation="horizontal" class="rounded-full">
+          <ColorPickerHue orientation="horizontal" class="h-3 rounded-full">
             <ColorPickerArea @change="({ x }) => setHsv({ h: x * 360 })">
               <ColorPickerIndicator
                 :left="(hsv.h / 360) * 100"
@@ -70,6 +71,26 @@ const emit = defineEmits<{
               />
             </ColorPickerArea>
           </ColorPickerHue>
+        </ColorPickerSection>
+
+        <!-- Alpha Slider -->
+        <ColorPickerSection v-if="!props.disableAlpha">
+          <ColorPickerRow class="justify-between px-0.5">
+            <ColorPickerLabel>Alpha</ColorPickerLabel>
+            <ColorPickerLabel class="font-mono normal-case">
+              {{ Math.round(hsv.a * 100) }}%
+            </ColorPickerLabel>
+          </ColorPickerRow>
+          <ColorPickerAlpha orientation="horizontal" class="h-3 rounded-full">
+            <ColorPickerArea @change="({ x }) => setHsv({ a: x })">
+              <ColorPickerIndicator
+                :left="hsv.a * 100"
+                :top="50"
+                :color="selectedColor.hex"
+                class="size-4"
+              />
+            </ColorPickerArea>
+          </ColorPickerAlpha>
         </ColorPickerSection>
 
         <!-- Input Section -->
