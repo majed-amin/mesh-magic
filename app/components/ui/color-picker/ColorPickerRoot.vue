@@ -8,6 +8,8 @@ import {
   type ColorPickerProps,
   type ColorValue,
   type HsvColor,
+  type OklchColor,
+  type RgbColor,
 } from "./types";
 
 const props = withDefaults(defineProps<ColorPickerProps>(), {
@@ -22,95 +24,95 @@ const props = withDefaults(defineProps<ColorPickerProps>(), {
 const colorModel = defineModel<ColorValue | string>({ default: "#000000" });
 const openModel = defineModel<boolean>("open", { default: false });
 
-// Normalize the model to ColorValue
-const color = computed<ColorValue>({
-  get: () => {
-    return parseColor(colorModel.value);
-  },
-  set: (val) => {
-    if (typeof colorModel.value === "string") {
-      colorModel.value = formatColor(val, props.format);
-    } else {
-      colorModel.value = val;
-    }
-  },
-});
-
 const emit = defineEmits<{
   (e: "change", value: ColorValue): void;
 }>();
 
+// --- SMART MODEL SYNC ---
 // The interactive source of truth (preserves Hue/Saturation when V=0)
-const hsvRef = ref<HsvColor>(color.value.hsv);
+const hsvRef = ref<HsvColor>(parseColor(colorModel.value).hsv);
 // The preview base color (the vibrant hue used for picker backgrounds)
 const previewColorRef = ref<ColorValue>(
-  parseColor({ h: color.value.hsv.h, s: 1, v: 1, a: 1 }),
+  parseColor({ h: hsvRef.value.h, s: 1, v: 1, a: 1 }),
 );
 
-// Flag to prevent reactivity loops and jitter during internal updates
+// Flag to prevent reactivity loops
 let isInternalUpdate = false;
 
-// Function to update the HSV state and sync others
-const updateHsv = (hsvUpdate: Partial<HsvColor>) => {
+// Keeps track of the last known consistent state to detect external property changes
+const lastSyncedColor = ref<ColorValue>(parseColor(colorModel.value));
+
+const syncInternal = (newColor: ColorValue, updateModel = false) => {
   isInternalUpdate = true;
-  const newHsv = { ...hsvRef.value, ...hsvUpdate };
-  if (hsvUpdate.h !== undefined) {
-    newHsv.h = Math.max(0, Math.min(360, Math.round(hsvUpdate.h)));
+  lastSyncedColor.value = JSON.parse(JSON.stringify(newColor));
+
+  // If we need to sync back to the user's model
+  if (updateModel) {
+    if (typeof colorModel.value === "object" && colorModel.value !== null) {
+      Object.assign(colorModel.value, newColor);
+    } else {
+      colorModel.value = formatColor(newColor, props.format);
+    }
   }
-  hsvRef.value = newHsv;
 
-  // Derive the new ColorValue from this HSV
-  const newColor = parseColor(newHsv);
-  color.value = newColor;
-
-  // Always keep the preview color in sync with the current hue
+  // Update Hue Slider base preview
   previewColorRef.value = parseColor({
-    h: newHsv.h,
+    h: newColor.hsv.h,
     s: 1,
     v: 1,
     a: 1,
   });
 
+  // Update Internal HSV (preserving resolution)
+  hsvRef.value = { ...newColor.hsv };
+
   emit("change", newColor);
+
   nextTick(() => {
     isInternalUpdate = false;
   });
 };
 
-// Sync internal state when the model changes externally
+// 1. React to external model changes (including deep property changes)
 watch(
-  () => color.value,
+  () => colorModel.value,
   (newVal) => {
     if (isInternalUpdate) return;
 
-    const incomingHsv = newVal.hsv;
-    // Update active HSV but preserve Hue if it's a grayscale change to prevent visual jump
-    if (incomingHsv.s > 0 && incomingHsv.v > 0) {
-      hsvRef.value = { ...incomingHsv };
-    } else {
-      hsvRef.value = {
-        ...hsvRef.value,
-        s: incomingHsv.s,
-        v: incomingHsv.v,
-        a: incomingHsv.a,
-      };
+    // Detect which property changed to determine the driver
+    const current = lastSyncedColor.value;
+    let driver: string | ColorValue | RgbColor | HsvColor | OklchColor = newVal;
+
+    if (typeof newVal === "object" && newVal !== null) {
+      if (newVal.hex !== current.hex) {
+        driver = newVal.hex;
+      } else if (JSON.stringify(newVal.rgb) !== JSON.stringify(current.rgb)) {
+        driver = newVal.rgb;
+      } else if (JSON.stringify(newVal.hsv) !== JSON.stringify(current.hsv)) {
+        driver = newVal.hsv;
+      } else {
+        return; // No meaningful change
+      }
     }
 
-    // Ensure preview color is updated
-    previewColorRef.value = parseColor({
-      h: hsvRef.value.h,
-      s: 1,
-      v: 1,
-      a: 1,
-    });
+    const consistent = parseColor(driver);
+    syncInternal(consistent, true); // Re-sync to fill in other properties
   },
-  { deep: true },
+  { deep: true, immediate: true },
 );
 
-const setColor = (newColor: ColorValue) => {
-  color.value = newColor;
-  hsvRef.value = newColor.hsv;
-  previewColorRef.value = parseColor({ h: newColor.hsv.h, s: 1, v: 1, a: 1 });
+// 2. Methods for internal components
+const updateHsv = (hsvUpdate: Partial<HsvColor>) => {
+  const newHsv = { ...hsvRef.value, ...hsvUpdate };
+  if (hsvUpdate.h !== undefined) {
+    newHsv.h = Math.max(0, Math.min(360, Math.round(hsvUpdate.h)));
+  }
+  const consistent = parseColor(newHsv);
+  syncInternal(consistent, true);
+};
+
+const setColor = (newColor: ColorValue | string) => {
+  syncInternal(parseColor(newColor), true);
 };
 
 const setPreviewColor = (newColor: ColorValue) => {
@@ -119,7 +121,7 @@ const setPreviewColor = (newColor: ColorValue) => {
 
 provide<ColorPickerContext>(COLOR_PICKER_KEY, {
   hsv: hsvRef,
-  color: color as unknown as Ref<ColorValue>,
+  color: lastSyncedColor,
   previewColor: previewColorRef,
   setHsv: updateHsv,
   emitColorChange: (newColor: ColorValue) => {
@@ -143,7 +145,7 @@ provide<ColorPickerContext>(COLOR_PICKER_KEY, {
   <Popover :open="openModel" @update:open="(val) => (openModel = val)">
     <slot
       :hsv="hsvRef"
-      :color="color"
+      :color="lastSyncedColor"
       :preview-color="previewColorRef"
       :set-hsv="updateHsv"
       :set-color="setColor"

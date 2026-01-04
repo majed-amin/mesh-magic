@@ -14,7 +14,7 @@ provide<SidebarContext>("sidebar", {
 
 <template>
   <aside
-    class="w-full border-t lg:border-t-0 lg:w-96 bg-card border-border lg:border-l flex flex-col"
+    class="bg-card border-border flex h-screen w-full flex-col overflow-y-auto border-t lg:w-96 lg:border-t-0 lg:border-l"
   >
     <slot />
   </aside>

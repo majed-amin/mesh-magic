@@ -127,4 +127,16 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* make scrollbar thin and based on dark and light theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 5px;
+  }
 }
