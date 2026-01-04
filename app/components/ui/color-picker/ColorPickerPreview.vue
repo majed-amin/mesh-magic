@@ -1,41 +1,39 @@
 <script setup lang="ts">
 import { PopoverTrigger } from "../popover";
-import {
-  COLOR_PICKER_KEY,
-  type ColorPickerContext,
-  type ColorValue,
-} from "./types";
+import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";
 import { cn } from "~/lib/utils";
 import type { HTMLAttributes } from "vue";
-import { parseColor } from "./color.utils";
 
 const props = defineProps<{
   class?: HTMLAttributes["class"];
 }>();
 
-const color = inject<ColorPickerContext>(COLOR_PICKER_KEY)
-  ?.color as Ref<ColorValue>;
+const context = inject<ColorPickerContext>(COLOR_PICKER_KEY);
+if (!context)
+  throw new Error("ColorPickerPreview must be used within ColorPickerRoot");
 
-const hex = computed<ColorValue>(() => {
-  return parseColor(color.value?.hex || "#000000");
-});
+const { color, disabled, shape } = context;
 
-onMounted(() => {
-  const root = document.documentElement;
-  root.style.setProperty("--c-picker-preview", hex.value.hex);
-});
-watch(color, () => {
-  const root = document.documentElement;
-  root.style.setProperty("--c-picker-preview", hex.value.hex);
+const hex = computed(() => {
+  return color.value.hex || "#000000";
 });
 </script>
 
 <template>
-  <PopoverTrigger as-child>
+  <PopoverTrigger as-child :disabled="disabled">
     <Button
       aria-label="Select Color"
-      :class="cn('size-10 p-0 rounded-md', props.class)"
-      style="background-color: var(--c-picker-preview)"
-    />
+      variant="outline"
+      :disabled="disabled"
+      :class="
+        cn(
+          'size-9 p-0 border shadow-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
+          shape === 'circle' ? 'rounded-full' : 'rounded-md',
+          props.class,
+        )
+      "
+    >
+      <div class="h-full w-full" :style="{ backgroundColor: hex }" />
+    </Button>
   </PopoverTrigger>
 </template>

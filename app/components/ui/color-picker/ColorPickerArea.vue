@@ -3,6 +3,7 @@ import { ref, onUnmounted } from "vue";
 import { useMouseInElement, useEventListener } from "@vueuse/core";
 import { cn } from "~/lib/utils";
 import type { HTMLAttributes } from "vue";
+import { COLOR_PICKER_KEY, type ColorPickerContext } from "./types";
 
 const props = withDefaults(
   defineProps<{
@@ -18,18 +19,22 @@ const emit = defineEmits<{
 }>();
 
 const areaRef = ref<HTMLDivElement | null>(null);
-const { elementX, elementY, elementWidth, elementHeight } =
-  useMouseInElement(areaRef);
+const mouse = useMouseInElement(areaRef); // Changed to assign to 'mouse' object
 const isDragging = ref(false);
+
+const context = inject<ColorPickerContext>(COLOR_PICKER_KEY);
+const disabled = computed(() => context?.disabled.value ?? false);
 
 const clamp = (v: number, min = 0, max = 1) => Math.max(min, Math.min(max, v));
 
 let rafId: number | null = null;
 
 const updatePosition = () => {
-  if (rafId) return;
+  if (disabled.value) return;
+  if (rafId) return; // Keep the RAF throttling logic
 
   rafId = requestAnimationFrame(() => {
+    const { elementX, elementY, elementWidth, elementHeight } = mouse;
     const w = elementWidth.value ?? 0;
     const h = elementHeight.value ?? 0;
 
@@ -43,6 +48,7 @@ const updatePosition = () => {
 };
 
 const onPointerDown = (e: PointerEvent) => {
+  if (disabled.value) return;
   isDragging.value = true;
   updatePosition();
   const el = areaRef.value as HTMLElement;
@@ -83,8 +89,13 @@ onUnmounted(() => {
 <template>
   <div
     ref="areaRef"
-    class="relative h-full w-full cursor-crosshair touch-none select-none"
-    :class="cn(props.class)"
+    class="relative h-full w-full touch-none select-none"
+    :class="
+      cn(
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-crosshair',
+        props.class,
+      )
+    "
     @pointerdown="onPointerDown"
   >
     <slot />

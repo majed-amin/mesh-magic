@@ -21,7 +21,7 @@ const props = defineProps<{
       backgroundColor: props.color || 'transparent',
       touchAction: 'none',
       forcedColorAdjust: 'none',
-      boxShadow: '0 0 0 1px black, inset 0 0 0 1px black',
+      boxShadow: '0 0 0 2px white, 0 0 4px rgba(0,0,0,0.5)',
     }"
   />
 </template>

@@ -5,11 +5,43 @@ import { parseColor } from "./color.utils";
 import {
   COLOR_PICKER_KEY,
   type ColorPickerContext,
+  type ColorPickerProps,
   type ColorValue,
   type HsvColor, // Assuming HsvColor is also from types
 } from "./types";
 
-const color = defineModel<ColorValue>({ required: true });
+const props = withDefaults(defineProps<ColorPickerProps>(), {
+  format: "hex",
+  shape: "circle",
+  disabled: false,
+  disableAlpha: false,
+  side: "bottom",
+  align: "center",
+  sideOffset: 4,
+});
+
+const colorModel = defineModel<ColorValue | string>({ required: true });
+const openModel = defineModel<boolean>("open", { default: false });
+
+// Normalize the model to ColorValue
+const color = computed<ColorValue>({
+  get: () => {
+    return parseColor(colorModel.value);
+  },
+  set: (val) => {
+    if (typeof colorModel.value === "string") {
+      if (props.format === "rgb") {
+        colorModel.value = `rgba(${val.rgb.r}, ${val.rgb.g}, ${val.rgb.b}, ${val.rgb.a})`;
+      } else if (props.format === "hsv") {
+        colorModel.value = `hsva(${Math.round(val.hsv.h)}, ${Math.round(val.hsv.s * 100)}%, ${Math.round(val.hsv.v * 100)}%, ${val.hsv.a})`;
+      } else {
+        colorModel.value = val.hex;
+      }
+    } else {
+      colorModel.value = val;
+    }
+  },
+});
 
 const emit = defineEmits<{
   (e: "change", value: ColorValue): void;
@@ -19,7 +51,7 @@ const emit = defineEmits<{
 const hsvRef = ref<HsvColor>(color.value.hsv);
 // The preview base color (the vibrant hue used for picker backgrounds)
 const previewColorRef = ref<ColorValue>(
-  parseColor({ ...color.value.hsv, s: 1, v: 1 }),
+  parseColor({ h: color.value.hsv.h, s: 1, v: 1, a: 1 }),
 );
 
 // Flag to prevent reactivity loops and jitter during internal updates
@@ -30,8 +62,7 @@ const updateHsv = (hsvUpdate: Partial<HsvColor>) => {
   isInternalUpdate = true;
   const newHsv = { ...hsvRef.value, ...hsvUpdate };
   if (hsvUpdate.h !== undefined) {
-    const hInt = Math.round(hsvUpdate.h);
-    newHsv.h = Math.max(0, Math.min(360, hInt));
+    newHsv.h = Math.max(0, Math.min(360, Math.round(hsvUpdate.h)));
   }
   hsvRef.value = newHsv;
 
@@ -39,42 +70,46 @@ const updateHsv = (hsvUpdate: Partial<HsvColor>) => {
   const newColor = parseColor(newHsv);
   color.value = newColor;
 
-  // We only update the preview color if Hue changed
-  if (hsvUpdate.h !== undefined) {
-    previewColorRef.value = parseColor({
-      h: hsvUpdate.h,
-      s: 1,
-      v: 1,
-      a: 1,
-    });
-  }
+  // Always keep the preview color in sync with the current hue
+  previewColorRef.value = parseColor({
+    h: newHsv.h,
+    s: 1,
+    v: 1,
+    a: 1,
+  });
 
   emit("change", newColor);
-  // Reset flag after the current tick to allow the watcher to skip
   nextTick(() => {
     isInternalUpdate = false;
   });
 };
 
-// Sync internal hsvRef when the model changes externally
+// Sync internal state when the model changes externally
 watch(
   () => color.value,
   (newVal) => {
-    // Skip if this change originated from internal updateHsv to avoid jitter
     if (isInternalUpdate) return;
 
-    // If it's materially different, update our high-precision reference
-    // but preserve Hue if it's a grayscale change
     const incomingHsv = newVal.hsv;
-    if (incomingHsv.v > 0 && incomingHsv.s > 0) {
-      hsvRef.value = incomingHsv;
+    // Update active HSV but preserve Hue if it's a grayscale change to prevent visual jump
+    if (incomingHsv.s > 0 && incomingHsv.v > 0) {
+      hsvRef.value = { ...incomingHsv };
     } else {
       hsvRef.value = {
         ...hsvRef.value,
-        a: incomingHsv.a,
+        s: incomingHsv.s,
         v: incomingHsv.v,
+        a: incomingHsv.a,
       };
     }
+
+    // Ensure preview color is updated
+    previewColorRef.value = parseColor({
+      h: hsvRef.value.h,
+      s: 1,
+      v: 1,
+      a: 1,
+    });
   },
   { deep: true },
 );
@@ -82,6 +117,7 @@ watch(
 const setColor = (newColor: ColorValue) => {
   color.value = newColor;
   hsvRef.value = newColor.hsv;
+  previewColorRef.value = parseColor({ h: newColor.hsv.h, s: 1, v: 1, a: 1 });
 };
 
 const setPreviewColor = (newColor: ColorValue) => {
@@ -90,7 +126,7 @@ const setPreviewColor = (newColor: ColorValue) => {
 
 provide<ColorPickerContext>(COLOR_PICKER_KEY, {
   hsv: hsvRef,
-  color: color,
+  color: color as unknown as Ref<ColorValue>,
   previewColor: previewColorRef,
   setHsv: updateHsv,
   emitColorChange: (newColor: ColorValue) => {
@@ -98,20 +134,28 @@ provide<ColorPickerContext>(COLOR_PICKER_KEY, {
   },
   setColor,
   setPreviewColor,
+  disabled: computed(() => props.disabled),
+  disableAlpha: computed(() => props.disableAlpha),
+  shape: computed(() => props.shape),
+  format: computed(() => props.format),
+  popoverProps: {
+    side: computed(() => props.side),
+    align: computed(() => props.align),
+    sideOffset: computed(() => props.sideOffset),
+  },
 });
 </script>
 
 <template>
-  <section class="p-4 flex flex-col gap-4">
-    <Popover as-child>
-      <slot
-        :hsv="hsvRef"
-        :color="color"
-        :preview-color="previewColorRef"
-        :set-hsv="updateHsv"
-        :set-color="setColor"
-        :set-preview-color="setPreviewColor"
-      />
-    </Popover>
-  </section>
+  <Popover :open="openModel" @update:open="(val) => (openModel = val)">
+    <slot
+      :hsv="hsvRef"
+      :color="color"
+      :preview-color="previewColorRef"
+      :set-hsv="updateHsv"
+      :set-color="setColor"
+      :set-preview-color="setPreviewColor"
+      :open="openModel"
+    />
+  </Popover>
 </template>

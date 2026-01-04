@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { cn } from "~/lib/utils";
 import type { HTMLAttributes } from "vue";
-import { Color } from "./color.utils";
 
 const props = withDefaults(
   defineProps<{
@@ -14,19 +13,10 @@ const props = withDefaults(
   },
 );
 
-// Generate a hue gradient across 0..360°
-const hueStops = computed(() => {
-  const stops: string[] = [];
-  for (let h = 0; h <= 360; h += 30) {
-    stops.push(new Color({ h, s: 1, v: 1, a: 1 }).hex);
-  }
-  return stops;
-});
-
 const backgroundStyle = computed(() => ({
-  backgroundImage: `linear-gradient(${
+  background: `linear-gradient(${
     props.orientation === "horizontal" ? "to right" : "to bottom"
-  }, ${hueStops.value.join(", ")})`,
+  }, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)`,
 }));
 </script>
 

@@ -7,3 +7,4 @@ export { default as ColorPickerSaturation } from "./ColorPickerSaturation.vue";
 export { default as ColorPickerHue } from "./ColorPickerHue.vue";
 export { default as ColorPickerArea } from "./ColorPickerArea.vue";
 export { default as ColorPickerIndicator } from "./ColorPickerIndicator.vue";
+export { default as ColorPickerInput } from "./ColorPickerInput.vue";

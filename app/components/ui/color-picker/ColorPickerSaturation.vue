@@ -10,11 +10,12 @@ const props = defineProps<{
 const colorPickerContext = inject<ColorPickerContext>(COLOR_PICKER_KEY);
 const previewColor = computed(() => colorPickerContext?.previewColor.value);
 
-const hueHex = computed(() => previewColor.value?.hex);
 const backgroundStyle = computed(() => ({
-  background: `linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)),
-  linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0)),
-  ${hueHex.value}`,
+  backgroundColor: previewColor.value?.hex || "#ff0000",
+  backgroundImage: `
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, transparent)
+  `,
 }));
 </script>
 

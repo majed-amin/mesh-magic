@@ -32,8 +32,14 @@ export type ColorValue = {
 
 // Props
 export type ColorPickerProps = {
-  pureColor: string;
-  format: "hex";
+  modelValue?: ColorValue | string;
+  format?: "hex" | "rgb" | "hsv" | "oklch";
+  shape?: "square" | "circle";
+  disabled?: boolean;
+  disableAlpha?: boolean;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
   class?: string;
 };
 
@@ -46,6 +52,15 @@ export type ColorPickerContext = {
   setColor: (color: ColorValue) => void;
   setPreviewColor: (color: ColorValue) => void;
   emitColorChange: (color: ColorValue) => void;
+  disabled: Ref<boolean>;
+  disableAlpha: Ref<boolean>;
+  shape: Ref<"square" | "circle">;
+  format: Ref<string>;
+  popoverProps: {
+    side: Ref<"top" | "right" | "bottom" | "left" | undefined>;
+    align: Ref<"start" | "center" | "end" | undefined>;
+    sideOffset: Ref<number | undefined>;
+  };
 };
 
 // Injection key

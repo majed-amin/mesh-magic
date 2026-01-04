@@ -52,21 +52,23 @@ const linearToSRgb = (c: number): number => {
 export class Color {
   private _rgb: RgbColor;
 
-  constructor(color: HexColor | RgbColor | HsvColor | OklchColor) {
-    this._rgb = this.parseInput(color) ?? { r: 0, g: 0, b: 0, a: 0 };
+  constructor(color: HexColor | RgbColor | HsvColor | OklchColor | ColorValue) {
+    this._rgb = this.parseInput(color) ?? { r: 0, g: 0, b: 0, a: 1 };
   }
 
   /**
    * Static factory method to create a Color instance.
    */
-  static from(color: HexColor | RgbColor | HsvColor | OklchColor): Color {
+  static from(
+    color: HexColor | RgbColor | HsvColor | OklchColor | ColorValue,
+  ): Color {
     return new Color(color);
   }
 
   private parseInput(
-    color: HexColor | RgbColor | HsvColor | OklchColor,
+    color: HexColor | RgbColor | HsvColor | OklchColor | ColorValue,
   ): RgbColor | null {
-    // Removed the unconditional SSR guard so hex/structured colors can be parsed on server.
+    if (!color) return null;
     if (typeof color === "string") {
       // Try hex or shorthand hex first
       const hexResult = this.hexToRgb(color);
@@ -77,6 +79,11 @@ export class Color {
       if (!colorToHex) return null;
       return this.hexToRgb(colorToHex);
     }
+
+    if ("rgb" in color) {
+      return color.rgb;
+    }
+
     if ("r" in color && "g" in color && "b" in color) {
       return color as RgbColor;
     }
@@ -254,7 +261,7 @@ export class Color {
  * Legacy support / Convenient short-hands
  */
 export const parseColor = (
-  color: Color | HexColor | HsvColor | RgbColor | OklchColor,
+  color: Color | HexColor | HsvColor | RgbColor | OklchColor | ColorValue,
 ): ColorValue => {
   const c = color instanceof Color ? color : new Color(color);
   return {
