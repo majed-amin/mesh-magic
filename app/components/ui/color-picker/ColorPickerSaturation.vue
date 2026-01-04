@@ -25,7 +25,7 @@ const backgroundStyle = computed(() => ({
 
 <template>
   <div
-    class="h-full w-full aspect-square rounded-lg bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText] overflow-hidden"
+    class="aspect-square h-full w-full overflow-hidden rounded-lg bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]"
     :class="cn(props.class)"
     :style="backgroundStyle"
   >

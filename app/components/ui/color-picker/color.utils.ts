@@ -30,9 +30,18 @@ export const isHexColorValid = (hex: HexColor): boolean => {
  */
 export const isValidColor = (
   value: string,
-  format: "hex" | "rgb" | "hsv" | "oklch",
+  format?: "hex" | "rgb" | "hsv" | "oklch" | "named-color",
 ): boolean => {
   const v = value.trim().toLowerCase();
+  if (!format) {
+    return (
+      HEX_REGEX.test(v) ||
+      RGB_REGEX.test(v) ||
+      HSV_REGEX.test(v) ||
+      OKLCH_REGEX.test(v) ||
+      colorNameToHex(v) !== null
+    );
+  }
   switch (format) {
     case "hex":
       return HEX_REGEX.test(v);
@@ -42,6 +51,8 @@ export const isValidColor = (
       return HSV_REGEX.test(v);
     case "oklch":
       return OKLCH_REGEX.test(v);
+    case "named-color":
+      return colorNameToHex(v) !== null;
     default:
       return false;
   }

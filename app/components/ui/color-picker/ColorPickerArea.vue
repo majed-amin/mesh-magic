@@ -153,7 +153,7 @@ onUnmounted(() => {
     :aria-orientation="props.orientation"
     aria-roledescription="color picker area"
     :aria-disabled="disabled"
-    class="relative h-full w-full touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    class="focus-visible:ring-ring relative h-full w-full touch-none outline-none select-none focus-visible:ring-2 focus-visible:ring-offset-2"
     :class="
       cn(
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-crosshair',

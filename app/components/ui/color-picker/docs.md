@@ -31,31 +31,31 @@ const color = ref('#6366f1');
 
 Available on both `ColorPickerRoot` and the high-level `ColorPicker`.
 
-| Prop | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `modelValue` | `string \| ColorValue` | `'#000000'` | The current color value. Supports HEX, RGB, HSV, and OKLCH strings. |
-| `format` | `'hex' \| 'rgb' \| 'hsv' \| 'oklch'` | `'hex'` | Determines the string format for `v-model` and the text input. |
-| `open` | `boolean` | `false` | Controls the open state of the popover. |
-| `disabled` | `boolean` | `false` | Disables all interactions with the picker. |
-| `disableAlpha` | `boolean` | `false` | Hides/disables alpha channel controls (where applicable). |
+| Prop           | Type                                 | Default     | Description                                                         |
+| :------------- | :----------------------------------- | :---------- | :------------------------------------------------------------------ |
+| `modelValue`   | `string \| ColorValue`               | `'#000000'` | The current color value. Supports HEX, RGB, HSV, and OKLCH strings. |
+| `format`       | `'hex' \| 'rgb' \| 'hsv' \| 'oklch'` | `'hex'`     | Determines the string format for `v-model` and the text input.      |
+| `open`         | `boolean`                            | `false`     | Controls the open state of the popover.                             |
+| `disabled`     | `boolean`                            | `false`     | Disables all interactions with the picker.                          |
+| `disableAlpha` | `boolean`                            | `false`     | Hides/disables alpha channel controls (where applicable).           |
 
 ### Popover Configuration
 
-| Prop | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `side` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'` | Preferred side to open the picker. |
-| `align` | `'start' \| 'center' \| 'end'` | `'center'` | Alignment relative to the trigger. |
-| `sideOffset` | `number` | `4` | Distance in pixels from the trigger. |
+| Prop         | Type                                     | Default    | Description                          |
+| :----------- | :--------------------------------------- | :--------- | :----------------------------------- |
+| `side`       | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'` | Preferred side to open the picker.   |
+| `align`      | `'start' \| 'center' \| 'end'`           | `'center'` | Alignment relative to the trigger.   |
+| `sideOffset` | `number`                                 | `4`        | Distance in pixels from the trigger. |
 
 ---
 
 ## Events
 
-| Event | Payload | Description |
-| :--- | :--- | :--- |
-| `update:modelValue` | `string \| ColorValue` | Emitted when the color changes. |
-| `update:open` | `boolean` | Emitted when the popover opens or closes. |
-| `change` | `ColorValue` | Emitted onทุก interaction with the high-level object representation of the color. |
+| Event               | Payload                | Description                                                                       |
+| :------------------ | :--------------------- | :-------------------------------------------------------------------------------- |
+| `update:modelValue` | `string \| ColorValue` | Emitted when the color changes.                                                   |
+| `update:open`       | `boolean`              | Emitted when the popover opens or closes.                                         |
+| `change`            | `ColorValue`           | Emitted onทุก interaction with the high-level object representation of the color. |
 
 ---
 

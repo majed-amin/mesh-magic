@@ -38,7 +38,7 @@ const emit = defineEmits<{
       <ColorPickerSection class="gap-4">
         <!-- Hue Slider -->
         <ColorPickerSection>
-          <ColorPickerRow class="justify-between px-0.5">
+          <ColorPickerRow>
             <ColorPickerLabel>Hue</ColorPickerLabel>
             <ColorPickerLabel class="font-mono normal-case">
               {{ Math.round(hsv.h) }}°
@@ -49,7 +49,7 @@ const emit = defineEmits<{
 
         <!-- Alpha Slider -->
         <ColorPickerSection v-if="!props.disableAlpha">
-          <ColorPickerRow class="justify-between px-0.5">
+          <ColorPickerRow>
             <ColorPickerLabel>Alpha</ColorPickerLabel>
             <ColorPickerLabel class="font-mono normal-case">
               {{ Math.round(hsv.a * 100) }}%

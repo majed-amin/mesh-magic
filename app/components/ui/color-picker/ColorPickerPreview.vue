@@ -29,7 +29,7 @@ const hex = computed(() => {
       :disabled="disabled"
       :class="
         cn(
-          'size-9 p-0 border shadow-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden rounded-md',
+          'ring-offset-background focus-visible:ring-ring size-9 overflow-hidden rounded-md border p-0 shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
           props.class,
         )
       "

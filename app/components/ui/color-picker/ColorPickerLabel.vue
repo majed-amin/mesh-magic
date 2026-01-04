@@ -11,7 +11,7 @@ const props = defineProps<{
   <span
     :class="
       cn(
-        'text-[11px] font-medium text-muted-foreground uppercase tracking-tight',
+        'text-muted-foreground text-[11px] font-medium tracking-tight uppercase',
         props.class,
       )
     "

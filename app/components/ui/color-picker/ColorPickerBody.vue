@@ -22,7 +22,7 @@ const sideOffset = computed(() => context?.popoverProps.sideOffset.value);
     data-slot="card"
     :class="
       cn(
-        'w-64 bg-card text-card-foreground flex flex-col gap-4 rounded-xl border p-4 shadow-md focus:outline-none',
+        'bg-card text-card-foreground flex w-64 flex-col gap-4 rounded-xl border p-4 shadow-md focus:outline-none',
         props.class,
       )
     "

@@ -38,7 +38,7 @@ const backgroundStyle = computed(() => {
 
 <template>
   <div
-    :class="cn('w-full rounded relative overflow-hidden', props.class)"
+    :class="cn('relative w-full overflow-hidden rounded', props.class)"
     :style="backgroundStyle"
   >
     <ColorPickerArea

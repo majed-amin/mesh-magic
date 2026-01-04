@@ -340,20 +340,20 @@ Complex features requiring more implementation effort.
 
 ```markdown
 app/components/ui/color-picker/
-├── index.ts                    # Exports
-├── types.ts                    # Type definitions
-├── colorUtils.ts               # Color utilities
-├── ColorPicker.vue             # Main component
-├── ColorPickerRoot.vue         # Root wrapper
-├── ColorPickerBody.vue         # Popover body
-├── ColorPickerPreview.vue      # Trigger button
-├── ColorPickerSaturation.vue   # 2D picker [DONE]
-├── ColorPickerHue.vue          # Hue slider [DONE]
-├── ColorPickerInput.vue        # Smart input [DONE]
-├── ColorPickerAlpha.vue        # Alpha slider [DONE]
-├── ColorPickerInputs.vue       # RGB inputs [PENDING]
-├── ColorPickerSwatches.vue     # History [PENDING]
-├── ColorPickerHeader.vue       # Mode tabs [PENDING]
-├── ColorPickerGradient.vue     # Gradient editor [PENDING]
-└── todo.md                     # This file
+├── index.ts # Exports
+├── types.ts # Type definitions
+├── colorUtils.ts # Color utilities
+├── ColorPicker.vue # Main component
+├── ColorPickerRoot.vue # Root wrapper
+├── ColorPickerBody.vue # Popover body
+├── ColorPickerPreview.vue # Trigger button
+├── ColorPickerSaturation.vue # 2D picker [DONE]
+├── ColorPickerHue.vue # Hue slider [DONE]
+├── ColorPickerInput.vue # Smart input [DONE]
+├── ColorPickerAlpha.vue # Alpha slider [DONE]
+├── ColorPickerInputs.vue # RGB inputs [PENDING]
+├── ColorPickerSwatches.vue # History [PENDING]
+├── ColorPickerHeader.vue # Mode tabs [PENDING]
+├── ColorPickerGradient.vue # Gradient editor [PENDING]
+└── todo.md # This file
 ```

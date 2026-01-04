@@ -16,7 +16,7 @@ const color = computed(() => context?.color.value);
   <div
     role="img"
     :aria-label="`Current color: ${color?.hex || 'none'}`"
-    :class="cn('size-9 rounded-md border shrink-0 shadow-inner', props.class)"
+    :class="cn('size-9 shrink-0 rounded-md border shadow-inner', props.class)"
     :style="{ backgroundColor: color?.hex || 'transparent' }"
   />
 </template>
