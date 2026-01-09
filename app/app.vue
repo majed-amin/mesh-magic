@@ -1,4 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+onBeforeMount(() => {
+  useGSAP().registerPlugin(MorphSVGPlugin);
+});
+</script>
 
 <template>
   <NuxtLoadingIndicator />

@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@nuxtjs/color-mode",
     "@nuxt/test-utils/module",
+    "v-gsap-nuxt",
   ],
 
   colorMode: {
