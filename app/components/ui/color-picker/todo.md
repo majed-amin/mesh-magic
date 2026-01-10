@@ -4,6 +4,18 @@
 
 ---
 
+Make sure to have
+update:modelValue
+[payload: number[]]
+Event handler called when the slider value changes
+
+valueCommit
+[payload: number[]]
+Event handler called when the value changes at the end of an interaction.
+
+Useful when you only need to capture a final value e.g. to update a backend service.
+and v-model support in all relevant components.
+
 ## 🟡 MEDIUM - Enhanced Features
 
 Additional features for a better user experience.

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import AppNavbar from "~/components/AppNavbar.vue";
+import MeshSidebar from "~/components/ui/MeshSidebar.vue";
 </script>
 
 <template>
-  <div class="bg-background size-full font-sans subpixel-antialiased">
+  <!-- <div class="bg-background size-full font-sans subpixel-antialiased">
     <AppNavbar />
 
     <div class="flex flex-col items-center justify-center p-8">
@@ -16,5 +16,8 @@ import AppNavbar from "~/components/AppNavbar.vue";
       </div>
       <slot />
     </div>
-  </div>
+  </div> -->
+  <MeshSidebar>
+    <slot />
+  </MeshSidebar>
 </template>

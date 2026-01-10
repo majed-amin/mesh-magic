@@ -1,4 +1,3 @@
-import { reactive } from "vue";
 import { parseColor } from "~/components/ui/color-picker/color.utils";
 import type { ColorValue } from "~/components/ui/color-picker/types";
 import { themes } from "~/utils/themes";
@@ -9,10 +8,10 @@ const BASE_COLOR = "#020617";
 export type Layer = {
   id: number;
   color: ColorValue;
-  x: number;
-  y: number;
+  x: number[];
+  y: number[];
+  blur: number[];
   size: number;
-  blur: number;
   borderRadius: string;
 };
 
@@ -75,82 +74,81 @@ const makeLayer = (color?: ColorValue): Layer => {
   return {
     id: Date.now() + Math.random(),
     color: color ?? parseColor(randomHex()),
-    x,
-    y,
+    x: [x],
+    y: [y],
     size: rand(40, 50),
-    blur: rand(80, 90),
+    blur: [rand(80, 90)],
     borderRadius: generateOrganicRadius(),
   };
 };
 
-export function useMeshGradient(initialBaseColor = BASE_COLOR) {
-  const config = reactive<MeshConfig>({
-    baseColor: parseColor(initialBaseColor),
-    layers: [],
-  });
+const config = ref<MeshConfig>({
+  baseColor: parseColor(BASE_COLOR),
+  layers: [
+    {
+      blur: [0],
+      x: [0],
+      y: [0],
+      id: Date.now() + Math.random(),
+      color: parseColor(BASE_COLOR),
+      size: 0,
+      borderRadius: "",
+    },
+  ],
+});
 
+export function useMeshGradient() {
   const addLayer = (color?: ColorValue) => {
-    config.layers.push(makeLayer(color));
+    config.value.layers.push(makeLayer(color));
   };
 
   const removeLayer = (index: number) => {
-    config.layers.splice(index, 1);
+    config.value.layers.splice(index, 1);
   };
 
   const duplicateLayer = (index: number) => {
-    const source = config.layers[index];
+    const source = config.value.layers[index];
     if (!source) return;
     const dup = { ...source, id: Date.now() + Math.random() };
-    config.layers.splice(index + 1, 0, dup);
+    config.value.layers.splice(index + 1, 0, dup);
   };
 
-  const updateLayer = ({ index, layer }: { index: number; layer: Layer }) => {
-    config.layers.splice(index, 1, layer);
+  const updateLayer = (index: number, layer: Layer) => {
+    config.value.layers.splice(index, 1, layer);
   };
 
   const randomize = (minLayers = 3, maxLayers = 8, newBaseColor?: string) => {
     if (newBaseColor) {
-      config.baseColor = parseColor(newBaseColor);
-    } else {
-      // Only randomize base color if explicitly asked (or for site bg logic)
-      // But wait, the original code for preview randomize:
-      // previewConfig.baseColor = parseColor(BASE_COLOR); (Reset to dark)
+      config.value.baseColor = parseColor(newBaseColor);
     }
 
-    // For general randomize, let's assume we might want to change base color or keep it.
-    // The original code had:
-    // Preview Randomize: base=#020617, 3-7 layers
-    // Site BG Randomize: base=random, 4-9 layers
-
-    // Let's make this flexible
     const count = Math.floor(
       Math.random() * (maxLayers - minLayers + 1) + minLayers,
     );
-    config.layers = [];
+    config.value.layers = [];
     for (let i = 0; i < count; i++) {
-      // For site bg, it used makeLayer() with random color (default behavior of makeLayer)
-      // For preview, it used addPreviewLayer(), which calls makeLayer(undefined) -> random color
-      config.layers.push(makeLayer());
+      config.value.layers.push(makeLayer());
     }
   };
 
   const applyTheme = (name: keyof typeof themes) => {
     const t = themes[name];
     if (!t) return;
-    config.layers = [];
+    config.value.layers = [];
     t.forEach((c) => addLayer(c));
   };
 
   const reset = (defaultBase = BASE_COLOR) => {
-    config.baseColor = parseColor(defaultBase);
+    config.value.baseColor = parseColor(defaultBase);
     if (themes.cosmic) {
-      config.layers = [];
+      config.value.layers = [];
       (themes.cosmic as ColorValue[]).forEach((c) => addLayer(c));
     } else {
       randomize(3, 7);
     }
   };
 
+  reset();
   return {
     config,
     addLayer,

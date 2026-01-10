@@ -7,10 +7,10 @@ defineProps<{
     layers: {
       id: number;
       color: ColorValue;
-      x: number;
-      y: number;
+      x: number[];
+      y: number[];
       size: number;
-      blur: number;
+      blur: number[];
       borderRadius: string;
     }[];
   };
@@ -22,24 +22,29 @@ defineEmits<{
 </script>
 <template>
   <div
-    class="relative aspect-video w-full"
+    class="relative size-full"
     :style="{ backgroundColor: config.baseColor.hex }"
   >
-    <div
-      v-for="layer in config.layers"
-      :key="layer.id"
-      class="pointer-events-none absolute mix-blend-screen transition-all duration-700 ease-out"
-      :style="{
-        width: layer.size + '%',
-        height: layer.size + '%',
-        left: layer.x + '%',
-        top: layer.y + '%',
-        backgroundColor: layer.color.hex,
-        filter: `blur(${layer.blur}px)`,
-        borderRadius: layer.borderRadius,
-        opacity: 0.8,
-      }"
-    />
+    <ClientOnly>
+      <template #placeholder>
+        <div class="size-full" />
+      </template>
+      <div
+        v-for="layer in config.layers"
+        :key="layer.id"
+        class="pointer-events-none absolute mix-blend-screen transition-all duration-700 ease-out"
+        :style="{
+          width: layer.size + '%',
+          height: layer.size + '%',
+          left: layer.x[0] + '%',
+          top: layer.y[0] + '%',
+          backgroundColor: layer.color.hex,
+          filter: `blur(${layer.blur[0]}px)`,
+          borderRadius: layer.borderRadius,
+          opacity: 0.8,
+        }"
+      />
+    </ClientOnly>
 
     <!-- Grain Texture Overlay -->
     <div
