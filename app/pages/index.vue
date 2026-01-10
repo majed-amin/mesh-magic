@@ -1,21 +1,22 @@
 <script setup lang="ts">
-/* Preview config (left column) - user editable / randomizable */
-const { config, removeLayer, randomize, reset, addLayer } = useMeshGradient();
+// /* Preview config (left column) - user editable / randomizable */
+// const { config, removeLayer, randomize, reset, addLayer } = useMeshGradient();
 
-/* Site background config (full-viewport) - randomized on each page load */
+// /* Site background config (full-viewport) - randomized on each page load */
 
-/* Controls wrappers */
-const randomizePreview = () => randomize(3, 7);
-const resetPreview = () => reset();
+// /* Controls wrappers */
+// const randomizePreview = () => randomize(3, 7);
+// const resetPreview = () => reset();
 
-onMounted(() => {
-  resetPreview();
-});
+// tryOnBeforeMount(() => {
+//   resetPreview();
+// });
 </script>
 
 <template>
+  <div>test</div>
   <!-- Main layout: two columns on md+ (preview left, controls right) -->
-  <section class="container mx-auto">
+  <!-- <section class="container mx-auto">
     <div class="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
       <div class="md:col-span-2">
         <div
@@ -41,15 +42,15 @@ onMounted(() => {
                 Reset
               </Button>
 
-              <!-- Small toolbar: export image and ask the user the width and h for it -->
-
-              <!-- Copy CSS the tailwind thngs -->
+              <span
+                >Small toolbar: export image and ask the user the width and h
+                for it
+              </span>
+              <span> Copy CSS the tailwind thngs </span>
             </div>
           </div>
 
-          <!-- Preview canvas -->
           <div class="border-muted/40 overflow-hidden rounded-md border">
-            <!-- Give preview a large aspect similar to original (but responsive) -->
             <div class="aspect-video w-full">
               <MeshGradient
                 :config
@@ -67,5 +68,5 @@ onMounted(() => {
         :randomize-preview="randomizePreview"
       />
     </div>
-  </section>
+  </section> -->
 </template>
