@@ -5,12 +5,14 @@ import {
   Copy01Icon,
   Delete02Icon,
   LayersIcon,
+  Loader,
   Plus,
   Recycle03Icon,
   RepeatOne02Icon,
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/vue";
+import ModeToggle from "./ModeToggle.vue";
 
 type SidebarSection = {
   id: string;
@@ -73,6 +75,16 @@ const {
                 <span class="truncate font-semibold">Mesh Gradient</span>
                 <p class="truncate text-sm">Your mesh with precision</p>
               </div>
+              <ClientOnly>
+                <template #placeholder>
+                  <Button
+                    as="svg"
+                    variant="outline"
+                    class="inline min-h-8 cursor-not-allowed opacity-50"
+                  />
+                </template>
+                <ModeToggle />
+              </ClientOnly>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -117,7 +129,12 @@ const {
             </SidebarGroupLabel>
 
             <SidebarGroupContent class="space-y-4">
-              <Accordion type="multiple" class="space-y-2" collapsible default-value="layer-1">
+              <Accordion
+                type="multiple"
+                class="space-y-2"
+                collapsible
+                default-value="layer-1"
+              >
                 <AccordionItem
                   v-for="(layer, index) in config.layers"
                   :key="layer.id"
