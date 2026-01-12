@@ -16,6 +16,7 @@ defineEmits<{
       </template>
       <div
         v-for="layer in config.layers"
+        :id="`layer-${layer.id}`"
         :key="layer.id"
         class="pointer-events-none absolute mix-blend-screen transition-all duration-700 ease-out"
         :style="{

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import "vue-sonner/style.css";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 onBeforeMount(() => {
   useGSAP().registerPlugin(MorphSVGPlugin);
@@ -12,4 +13,6 @@ onBeforeMount(() => {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+
+  <Toaster />
 </template>

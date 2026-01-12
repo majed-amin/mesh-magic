@@ -1,9 +1,11 @@
+import { toast } from "vue-sonner";
 import { parseColor } from "~/components/ui/color-picker/color.utils";
 import type { ColorValue } from "~/components/ui/color-picker/types";
 import { themes } from "~/utils/themes";
 
 const BASE_COLOR = "#020617";
 const DEFAULT_LAYER_COUNT = 4;
+export const maxLayerCount = ref(8);
 
 /* Types */
 export type Layer = {
@@ -93,6 +95,7 @@ export function useMeshGradient() {
   }));
 
   const addLayer = (color?: ColorValue) => {
+    if (config.value.layers.length === maxLayerCount.value) return;
     config.value.layers.push(makeLayer(color));
   };
 
@@ -101,6 +104,8 @@ export function useMeshGradient() {
   };
 
   const duplicateLayer = (index: number) => {
+    if (config.value.layers.length === maxLayerCount.value) return;
+
     const source = config.value.layers[index];
     if (!source) return;
     const dup = { ...source, id: generateLayerId() };
@@ -111,7 +116,11 @@ export function useMeshGradient() {
     config.value.layers.splice(index, 1, layer);
   };
 
-  const randomize = (minLayers = 3, maxLayers = 8, newBaseColor?: string) => {
+  const randomize = (
+    minLayers = 1,
+    maxLayers = maxLayerCount.value,
+    newBaseColor?: string,
+  ) => {
     if (newBaseColor) {
       config.value.baseColor = parseColor(newBaseColor);
     }
@@ -138,6 +147,37 @@ export function useMeshGradient() {
     config.value.layers = generateInitialLayers();
   };
 
+  const copyTextLayer = async (layer: Layer) => {
+    const x = layer.x?.[0] ?? 0;
+    const y = layer.y?.[0] ?? 0;
+    const blur = layer.blur?.[0] ?? 0;
+    const size = layer.size ?? 64;
+    const colorHex = (layer.color?.hex ?? "#000000").toLowerCase();
+    // Tailwind arbitrary brackets can't contain spaces in the class name, so replace spaces w/ underscores
+    const brRaw = layer.borderRadius ?? "50%";
+    const brForClass = brRaw.replace(/\s+/g, "_");
+
+    // Build classes
+    const classes = [
+      "absolute",
+      `left-[${x}%]`,
+      `top-[${y}%]`,
+      `w-[${size}px]`,
+      `h-[${size}px]`,
+      `bg-[${colorHex}]`,
+      `rounded-[${brForClass}]`,
+    ];
+
+    const classString = classes.join(" ");
+    const htmlSnippet = `<div class="${classString}"></div>`;
+
+    await copyTextClient(htmlSnippet);
+    toast("Copied", {
+      description: "Layer HTML copied to clipboard",
+      richColors: true,
+    });
+  };
+
   return {
     config,
     addLayer,
@@ -147,5 +187,6 @@ export function useMeshGradient() {
     randomize,
     applyTheme,
     reset,
+    copyTextLayer,
   };
 }

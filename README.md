@@ -18,7 +18,7 @@ A beautiful and intuitive mesh gradient generator built with Nuxt 4. Create stun
 ## Tech Stack
 
 - **Framework:** [Nuxt 4](https://nuxt.com/)
-- **UI Components:** [shadcn-vue](https://www.shadcn-vue.com/) 
+- **UI Components:** [shadcn-vue](https://www.shadcn-vue.com/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons:** [Hugeicons](https://hugeicons.com/)
 - **UI Primitives:** [reka-ui](https://github.com/parsadanashvili/reka-ui)
@@ -30,6 +30,8 @@ A beautiful and intuitive mesh gradient generator built with Nuxt 4. Create stun
 
 - [ ] Add copy CSS functionality
 - [ ] Add copy SVG functionality
+- [ ] Add path changer for custom shapes
+- [ ] Add z-index control for layers
 - [ ] Download gradient as image (PNG/JPG) with custom width and hight.
 - [ ] Add draggable dots/controls on each layer for interactive positioning
 - [ ] Keyboard shortcuts for common actions
