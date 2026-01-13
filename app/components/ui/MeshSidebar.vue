@@ -4,12 +4,14 @@ import {
   ColorsIcon,
   Copy01Icon,
   Delete02Icon,
+  ImageDownloadIcon,
   LayersIcon,
   PaintBoardIcon,
   Plus,
   Recycle03Icon,
   RepeatOne02Icon,
   SparklesIcon,
+  Svg01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/vue";
 import ModeToggle from "./ModeToggle.vue";
@@ -54,11 +56,24 @@ const {
   reset,
   copyTextLayer,
   copyMeshCSS,
+  downloadMeshImage,
 } = useMeshGradient();
 
 const setNewLayerCount = (v: number) => {
   maxLayerCount.value = v;
 };
+
+const downloadImageLoading = ref(false);
+const showDownloadImageSizeDialog = ref(false);
+const IMAGE_PRESETS = [
+  { label: "Instagram Post (1080×1080)", w: 1080, h: 1080 },
+  { label: "Instagram Story (1080×1920)", w: 1080, h: 1920 },
+  { label: "Twitter / X (1200×675)", w: 1200, h: 675 },
+  { label: "Desktop HD (1920×1080)", w: 1920, h: 1080 },
+  { label: "4K (3840×2160)", w: 3840, h: 2160 },
+];
+const downloadImageWidth = ref(800);
+const downloadImageHeight = ref(600);
 </script>
 
 <template>
@@ -300,7 +315,7 @@ const setNewLayerCount = (v: number) => {
     <SidebarInset class="relative">
       <div class="relative">
         <SidebarTrigger
-          class="text-sidebar-primary-foreground absolute top-4 left-4 z-10 -ml-1 shadow"
+          class="text-sidebar-primary-foreground absolute top-4 left-4 z-10 -ml-1 size-6 shadow"
         />
 
         <TooltipProvider>
@@ -311,14 +326,28 @@ const setNewLayerCount = (v: number) => {
                 data-slot="sidebar-trigger"
                 variant="ghost"
                 size="icon"
-                class="text-sidebar-primary-foreground absolute top-4 left-12 z-10 -ml-1 size-7 shadow"
+                class="text-sidebar-primary-foreground absolute top-4 left-13 z-10 -ml-1 size-6 shadow"
                 @click="copyMeshCSS"
               >
-                <HugeiconsIcon :icon="PaintBoardIcon" />
+                <HugeiconsIcon :icon="PaintBoardIcon" class="size-6" />
                 <span class="sr-only">Toggle Sidebar</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>Copy Mesh CSS</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <HugeiconsIcon
+                class="text-sidebar-primary-foreground absolute top-4 left-22 z-10 -ml-1 size-6 shadow"
+                :icon="ImageDownloadIcon"
+                @click="showDownloadImageSizeDialog = true"
+              />
+              <span class="sr-only">Download Mesh</span>
+            </TooltipTrigger>
+            <TooltipContent>Download Mesh</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -327,4 +356,110 @@ const setNewLayerCount = (v: number) => {
       </div>
     </SidebarInset>
   </SidebarProvider>
+
+  <Dialog v-model:open="showDownloadImageSizeDialog">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Choose image width and height</DialogTitle>
+        <DialogDescription>
+          Download the mesh gradient as a PNG with a preset size or custom
+          dimensions.
+        </DialogDescription>
+      </DialogHeader>
+
+      <div class="space-y-4">
+        <!-- Preset dropdown -->
+        <Select
+          @update:model-value="
+            (v) => {
+              const preset = IMAGE_PRESETS.find((p) => p.label === v);
+              if (!preset) return;
+              downloadImageWidth = preset.w;
+              downloadImageHeight = preset.h;
+            }
+          "
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Popular sizes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="preset in IMAGE_PRESETS"
+              :key="preset.label"
+              :value="preset.label"
+            >
+              {{ preset.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <!-- Custom inputs -->
+        <div class="flex items-end gap-4">
+          <NumberField
+            :model-value="downloadImageWidth"
+            :min="100"
+            :max="5000"
+            @update:model-value="(v) => (downloadImageWidth = v)"
+          >
+            <Label>Width</Label>
+            <NumberFieldContent>
+              <NumberFieldDecrement />
+              <NumberFieldInput />
+              <NumberFieldIncrement />
+            </NumberFieldContent>
+          </NumberField>
+
+          <!-- Switch value -->
+          <Button
+            variant="outline"
+            @click="
+              () => {
+                const temp = downloadImageWidth;
+                downloadImageWidth = downloadImageHeight;
+                downloadImageHeight = temp;
+              }
+            "
+          >
+            <HugeiconsIcon :icon="ArrowDataTransferHorizontalIcon" />
+          </Button>
+
+          <NumberField
+            :model-value="downloadImageHeight"
+            :min="100"
+            :max="5000"
+            @update:model-value="(v) => (downloadImageHeight = v)"
+          >
+            <Label>Height</Label>
+            <NumberFieldContent>
+              <NumberFieldDecrement />
+              <NumberFieldInput />
+              <NumberFieldIncrement />
+            </NumberFieldContent>
+          </NumberField>
+        </div>
+
+        <Button
+          class="w-full"
+          :disabled="downloadImageLoading"
+          @click="
+            downloadMeshImage(
+              {
+                width: downloadImageWidth,
+                height: downloadImageHeight,
+                to: 'png',
+              },
+              () => {
+                showDownloadImageSizeDialog = false;
+                downloadImageLoading = false;
+              },
+            );
+            downloadImageLoading = true;
+          "
+        >
+          <LazySpinner v-if="downloadImageLoading" />
+          Download
+        </Button>
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>

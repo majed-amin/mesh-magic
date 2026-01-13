@@ -1,7 +1,10 @@
+import { ref } from "vue";
 import { toast } from "vue-sonner";
 import { parseColor } from "~/components/ui/color-picker/color.utils";
 import type { ColorValue } from "~/components/ui/color-picker/types";
 import { themes } from "~/utils/themes";
+import { copyTextClient } from "~/utils/copy";
+import { toPng, toJpeg, toSvg } from "html-to-image";
 
 const BASE_COLOR = "#020617";
 const DEFAULT_LAYER_COUNT = 4;
@@ -189,6 +192,66 @@ export function useMeshGradient() {
     });
   };
 
+  const downloadMeshImage = async (
+    {
+      width,
+      height,
+      to,
+    }: {
+      width: number;
+      height: number;
+      to: "png" | "jpeg" | "svg";
+    },
+    onFinish?: VoidFunction,
+  ) => {
+    const element = document.getElementById("mesh-gradient");
+    if (!element) return;
+
+    const pixelRatio = window.devicePixelRatio || 1;
+
+    const baseOptions = {
+      width,
+      height,
+      pixelRatio,
+      backgroundColor: config.value.baseColor.hex,
+      cacheBust: true,
+    };
+
+    const rasterOptions = {
+      ...baseOptions,
+      canvasWidth: width * pixelRatio,
+      canvasHeight: height * pixelRatio,
+    };
+
+    let dataUrl: string;
+
+    switch (to) {
+      case "png":
+        dataUrl = await toPng(element, rasterOptions);
+        break;
+      case "jpeg":
+        dataUrl = await toJpeg(element, { ...rasterOptions, quality: 0.95 });
+        break;
+      case "svg":
+        dataUrl = await toSvg(element, baseOptions);
+        break;
+      default:
+        return;
+    }
+
+    const link = document.createElement("a");
+    link.download = `mesh-gradient.${to}`;
+    link.href = dataUrl;
+    link.click();
+
+    onFinish?.();
+
+    toast("Downloaded", {
+      description: `Mesh gradient downloaded as ${to.toUpperCase()}`,
+      richColors: true,
+    });
+  };
+
   return {
     config,
     addLayer,
@@ -200,5 +263,6 @@ export function useMeshGradient() {
     reset,
     copyTextLayer,
     copyMeshCSS,
+    downloadMeshImage,
   };
 }
