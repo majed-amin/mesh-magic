@@ -83,8 +83,16 @@ const onDownloadImage = () => {
 
         <!-- Angle (Linear only) -->
         <div v-if="config.type === 'linear'" class="space-y-2">
-          <span class="text-sm font-medium">Angle: {{ config.angle }}deg</span>
-          <Input v-model="config.angle" type="range" min="0" max="360" />
+          <Label for="angle" class="text-sm font-medium"
+            >Angle: {{ config.angle }}deg</Label
+          >
+          <Input
+            v-model="config.angle"
+            id="angle"
+            type="range"
+            min="0"
+            max="360"
+          />
         </div>
 
         <!-- Stops Configuration (Simplified) -->

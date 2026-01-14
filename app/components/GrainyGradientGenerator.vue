@@ -70,11 +70,12 @@ const onDownloadImage = () => {
         </div>
 
         <div class="space-y-2">
-          <span class="text-sm font-medium"
-            >Noise Opacity: {{ Math.round(config.noiseOpacity * 100) }}%</span
-          >
+          <Label for="noise-opacity" class="text-sm font-medium"
+            >Noise Opacity: {{ Math.round(config.noiseOpacity * 100) }}%
+          </Label>
           <Input
             v-model.number="config.noiseOpacity"
+            id="noise-opacity"
             type="range"
             min="0"
             max="1"
