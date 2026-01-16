@@ -14,6 +14,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/vue";
 import ModeToggle from "./ModeToggle.vue";
+import { cn } from "~/lib/utils";
 
 type SidebarSection = {
   id: string;
@@ -334,7 +335,12 @@ const downloadImageHeight = ref(600);
             <Button
               aria-label="randomize-button"
               aria-labelledby="randomize-button"
-              class="flex-2 bg-white text-black hover:bg-gray-100"
+              class="flex-2 transition-colors"
+              :class="
+                cn(
+                  'bg-white text-black hover:bg-gray-100 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800',
+                )
+              "
               @click="randomize()"
             >
               <HugeiconsIcon :icon="ArrowDataTransferHorizontalIcon" size="4" />

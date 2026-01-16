@@ -9,20 +9,16 @@ onBeforeMount(() => {
 // Runtime config & route used to build canonical/og:url. Set NUXT_PUBLIC_SITE_URL in env/runtimeConfig for production.
 const runtimeConfig = useRuntimeConfig();
 const route = useRoute();
-
 // Coerce to string before using. Fallback to a sensible default and remove trailing slash.
 const rawSiteUrl = String(
   runtimeConfig?.public?.siteUrl ?? "https://mesh-magic.example",
 );
 const siteUrl = rawSiteUrl.replace(/\/$/, "");
-
 const canonical = siteUrl + route.path;
-
 const defaultTitle = "Mesh Magic";
 const defaultDescription =
   "Create beautiful procedural mesh gradients — customize, preview and export gradients for your designs.";
 const defaultImage = siteUrl + "/og-image.png"; // Add a real image at this path (or change the path).
-
 useHead({
   title: defaultTitle,
   titleTemplate: (title) => (title ? `${title} - Mesh Magic` : "Mesh Magic"),
@@ -57,7 +53,6 @@ useHead({
     { rel: "canonical", href: canonical },
     { rel: "icon", href: "/favicon.ico" },
     // { rel: "manifest", href: "/site.webmanifest" },
-    { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   ],
   
 });
