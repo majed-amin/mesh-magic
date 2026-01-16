@@ -18,6 +18,7 @@ import ModeToggle from "./ModeToggle.vue";
 
 type SidebarSection = {
   id: string;
+  for: string;
   title: string;
   icon?: Component;
   type: "color" | "themes" | "layers";
@@ -27,6 +28,7 @@ type SidebarSection = {
 const sections: SidebarSection[] = [
   {
     id: "base",
+    for: "base-color-input",
     title: "Base Color",
     icon: ColorsIcon,
     type: "color",
@@ -34,12 +36,14 @@ const sections: SidebarSection[] = [
   },
   {
     id: "themes",
+    for: "apply-theme-button",
     title: "Quick Themes",
     icon: SparklesIcon,
     type: "themes",
   },
   {
     id: "layers",
+    for: "layer-settings",
     title: "Gradient Layers",
     icon: LayersIcon,
     type: "layers",
@@ -117,11 +121,11 @@ const downloadImageHeight = ref(600);
           <Separator v-if="section.sparated" class="my-2" />
           <SidebarGroup v-if="section.type === 'color'">
             <div class="grid grid-cols-3">
-              <SidebarGroupLabel class="col-span-2">{{
-                section.title
-              }}</SidebarGroupLabel>
-              <SidebarGroupLabel for="max-layrer-count">
-                Max Layers
+              <SidebarGroupLabel class="col-span-2" as-child>
+                <Label :for="section.for">{{ section.title }}</Label>
+              </SidebarGroupLabel>
+              <SidebarGroupLabel for="max-layrer-count" as-child>
+                <Label for="max-layer-count-input"> Max Layers </Label>
               </SidebarGroupLabel>
             </div>
             <SidebarGroupContent
@@ -130,7 +134,7 @@ const downloadImageHeight = ref(600);
             >
               <ColorPicker v-model="config.baseColor" />
               <SidebarMenuButton as-child>
-                <Input v-model="config.baseColor.hex" />
+                <Input v-model="config.baseColor.hex" :id="section.for" />
               </SidebarMenuButton>
 
               <NumberField
@@ -142,7 +146,7 @@ const downloadImageHeight = ref(600);
               >
                 <NumberFieldContent>
                   <NumberFieldDecrement />
-                  <NumberFieldInput />
+                  <NumberFieldInput id="max-layer-count-input" />
                   <NumberFieldIncrement />
                 </NumberFieldContent>
               </NumberField>
@@ -331,7 +335,7 @@ const downloadImageHeight = ref(600);
             <Button
               aria-label="randomize-button"
               aria-labelledby="randomize-button"
-              class="flex-2"
+              class="flex-2 bg-white text-black hover:bg-gray-100"
               @click="randomize()"
             >
               <HugeiconsIcon :icon="ArrowDataTransferHorizontalIcon" size="4" />

@@ -26,7 +26,11 @@ const defaultImage = siteUrl + "/og-image.png"; // Add a real image at this path
 useHead({
   title: defaultTitle,
   titleTemplate: (title) => (title ? `${title} - Mesh Magic` : "Mesh Magic"),
+
   meta: [
+    // lang
+    { name: "language", content: "en" },
+    { name: "content-language", content: "en" },
     // Core
     { name: "viewport", content: "width=device-width, initial-scale=1" },
     { name: "description", content: defaultDescription },
@@ -52,7 +56,7 @@ useHead({
   link: [
     { rel: "canonical", href: canonical },
     { rel: "icon", href: "/favicon.ico" },
-    { rel: "manifest", href: "/site.webmanifest" },
+    // { rel: "manifest", href: "/site.webmanifest" },
     { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
   ],
   script: [

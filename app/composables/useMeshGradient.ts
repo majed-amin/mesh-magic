@@ -189,15 +189,18 @@ export function useMeshGradient() {
     const noiseSvgUrl = `${baseUrl}/noise.svg`;
 
     // Get the HTML directly from the element
-    element.classList.remove('size-full')
-    element.classList.add('w-screen')
-    element.classList.add('h-screen')
-    element.classList.add('overflow-clip')
+    element.classList.remove("size-full");
+    element.classList.add("w-screen");
+    element.classList.add("h-screen");
+    element.classList.add("overflow-clip");
     let html = element.outerHTML;
-    
+
     // Replace the relative noise.svg path with the full URL
-    html = html.replace(/url\(['"]?\/noise\.svg['"]?\)/g, `url('${noiseSvgUrl}')`);
-    
+    html = html.replace(
+      /url\(['"]?\/noise\.svg['"]?\)/g,
+      `url('${noiseSvgUrl}')`,
+    );
+
     await copyTextClient(html);
     toast("Copied", {
       description: "Mesh CSS copied to clipboard",
