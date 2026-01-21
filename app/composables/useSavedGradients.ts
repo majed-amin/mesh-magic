@@ -70,6 +70,7 @@ export function useSavedGradients() {
    * Loads saved gradients from localStorage.
    */
   const loadFromStorage = () => {
+    if (!import.meta.client) return; // Only run on client-side
     if (isLoaded.value) return; // Already loaded
     
     try {
@@ -88,6 +89,8 @@ export function useSavedGradients() {
    * Saves gradients to localStorage with debouncing to prevent excessive writes.
    */
   const saveToStorage = useDebounceFn(() => {
+    if (!import.meta.client) return; // Only run on client-side
+    
     try {
       // Limit the number of saved gradients
       const gradientsToSave = savedGradients.value.slice(0, MAX_SAVED_GRADIENTS);

@@ -50,7 +50,7 @@ const handleLoadGradient = (gradient: SavedGradient) => {
 };
 
 const formatDate = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString("en-US", {
+  return new Date(timestamp).toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
