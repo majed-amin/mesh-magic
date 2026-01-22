@@ -1,6 +1,6 @@
 import { ref, nextTick } from "vue";
 import { toast } from "vue-sonner";
-import { useDebounceFn, watchPausable } from "@vueuse/core";
+import { watchPausable } from "@vueuse/core";
 import { parseColor } from "~/components/ui/color-picker/color.utils";
 import type { ColorValue } from "~/components/ui/color-picker/types";
 import { themes } from "~/utils/themes";
@@ -147,17 +147,37 @@ export function useMeshGradient() {
   // Initialize history tracking
   const history = useHistory(config.value, { limit: 30, deep: true });
 
+  // Debounce timer for history recording
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Cancels any pending debounced history recording.
+   */
+  const cancelDebouncedHistory = () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
+  };
+
   /**
    * Records the current state to history (debounced for slider changes).
    */
-  const debouncedRecordHistory = useDebounceFn(() => {
-    history.push(config.value);
-  }, 300);
+  const debouncedRecordHistory = () => {
+    cancelDebouncedHistory();
+    debounceTimer = setTimeout(() => {
+      history.push(config.value);
+      debounceTimer = null;
+    }, 300);
+  };
 
   /**
    * Immediate history recording (for actions like add/remove layer).
    */
   const recordHistory = () => {
+    // Cancel any pending debounced recording
+    cancelDebouncedHistory();
+    
     // Pause watcher temporarily to avoid double recording
     pauseHistory();
     
@@ -450,6 +470,9 @@ export function useMeshGradient() {
   const undo = () => {
     if (!history.canUndo.value) return;
     
+    // Cancel any pending debounced recording
+    cancelDebouncedHistory();
+    
     // Pause history recording
     pauseHistory();
     
@@ -472,6 +495,9 @@ export function useMeshGradient() {
    */
   const redo = () => {
     if (!history.canRedo.value) return;
+    
+    // Cancel any pending debounced recording
+    cancelDebouncedHistory();
     
     // Pause history recording
     pauseHistory();
