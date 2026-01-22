@@ -17,6 +17,17 @@ export function useAppKeyboardShortcuts() {
    * Registers all application keyboard shortcuts.
    */
   const setupShortcuts = () => {
+    /**
+     * Checks if the user is currently typing in an input field.
+     */
+    const isTypingInInput = (): boolean => {
+      const activeElement = document.activeElement;
+      return !!activeElement && (
+        activeElement.tagName.toLowerCase() === "input" ||
+        activeElement.tagName.toLowerCase() === "textarea"
+      );
+    };
+
     // Show keyboard shortcuts help (?)
     registerKeyStroke("?", () => {
       toggleHelpDialog();
@@ -27,14 +38,7 @@ export function useAppKeyboardShortcuts() {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         
-        // Don't trigger when typing
-        const activeElement = document.activeElement;
-        if (activeElement && (
-          activeElement.tagName.toLowerCase() === "input" ||
-          activeElement.tagName.toLowerCase() === "textarea"
-        )) {
-          return;
-        }
+        if (isTypingInInput()) return;
         
         // Check for Shift key for redo
         if (e.shiftKey) {
@@ -49,39 +53,12 @@ export function useAppKeyboardShortcuts() {
       }
     });
 
-    // Redo with Ctrl+Shift+Z (uppercase Z)
-    onKeyStroke("Z", (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        
-        // Don't trigger when typing
-        const activeElement = document.activeElement;
-        if (activeElement && (
-          activeElement.tagName.toLowerCase() === "input" ||
-          activeElement.tagName.toLowerCase() === "textarea"
-        )) {
-          return;
-        }
-        
-        if (canRedo.value) {
-          redo();
-        }
-      }
-    });
-
     // Redo (Ctrl+Y / Cmd+Y)
     onKeyStroke("y", (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         
-        // Don't trigger when typing
-        const activeElement = document.activeElement;
-        if (activeElement && (
-          activeElement.tagName.toLowerCase() === "input" ||
-          activeElement.tagName.toLowerCase() === "textarea"
-        )) {
-          return;
-        }
+        if (isTypingInInput()) return;
         
         if (canRedo.value) {
           redo();
@@ -94,14 +71,7 @@ export function useAppKeyboardShortcuts() {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         
-        // Don't trigger when typing
-        const activeElement = document.activeElement;
-        if (activeElement && (
-          activeElement.tagName.toLowerCase() === "input" ||
-          activeElement.tagName.toLowerCase() === "textarea"
-        )) {
-          return;
-        }
+        if (isTypingInInput()) return;
         
         saveGradient(config.value);
       }
@@ -109,14 +79,7 @@ export function useAppKeyboardShortcuts() {
 
     // Randomize gradient (R) / Reset (Ctrl+R / Cmd+R)
     onKeyStroke("r", (e: KeyboardEvent) => {
-      // Don't trigger when typing
-      const activeElement = document.activeElement;
-      if (activeElement && (
-        activeElement.tagName.toLowerCase() === "input" ||
-        activeElement.tagName.toLowerCase() === "textarea"
-      )) {
-        return;
-      }
+      if (isTypingInInput()) return;
       
       // Check if Ctrl/Cmd is pressed for reset
       if (e.ctrlKey || e.metaKey) {

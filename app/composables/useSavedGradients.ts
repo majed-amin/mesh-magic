@@ -1,6 +1,7 @@
 import { toast } from "vue-sonner";
 import { useDebounceFn } from "@vueuse/core";
 import type { MeshConfig } from "./useMeshGradient";
+import { deepClone } from "~/utils/clone";
 
 /**
  * Represents a saved gradient with metadata.
@@ -42,21 +43,6 @@ const generateDefaultName = (existingNames: string[]): string => {
   }
   
   return name;
-};
-
-/**
- * Deep clones an object using structuredClone (faster than JSON methods).
- * Falls back to JSON methods for older browsers or incompatible objects.
- */
-const deepClone = <T>(obj: T): T => {
-  try {
-    if (typeof structuredClone !== "undefined") {
-      return structuredClone(obj);
-    }
-  } catch {
-    // Fall through to JSON method if structuredClone fails
-  }
-  return JSON.parse(JSON.stringify(obj));
 };
 
 /**

@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+import { deepClone } from "~/utils/clone";
 
 /**
  * Configuration options for the history composable.
@@ -25,21 +26,6 @@ export function useHistory<T>(
   const past = ref<T[]>([]);
   const present = ref<T>(deep ? deepClone(initialValue) : initialValue);
   const future = ref<T[]>([]);
-
-  /**
-   * Deep clones an object using structuredClone (faster than JSON methods).
-   * Falls back to JSON methods for older browsers or incompatible objects.
-   */
-  function deepClone<V>(value: V): V {
-    try {
-      if (typeof structuredClone !== "undefined") {
-        return structuredClone(value);
-      }
-    } catch {
-      // Fall through to JSON method if structuredClone fails
-    }
-    return JSON.parse(JSON.stringify(value));
-  }
 
   /**
    * Clones a value based on the deep option.
