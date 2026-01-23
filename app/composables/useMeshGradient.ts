@@ -15,6 +15,27 @@ const DEFAULT_LAYER_COUNT = 4;
 export const maxLayerCount = ref(8);
 
 /**
+ * CSS blend modes available for layers.
+ */
+export type BlendMode =
+  | "normal"
+  | "multiply"
+  | "screen"
+  | "overlay"
+  | "darken"
+  | "lighten"
+  | "color-dodge"
+  | "color-burn"
+  | "hard-light"
+  | "soft-light"
+  | "difference"
+  | "exclusion"
+  | "hue"
+  | "saturation"
+  | "color"
+  | "luminosity";
+
+/**
  * Represents a single layer in the mesh gradient.
  */
 export type Layer = {
@@ -34,6 +55,8 @@ export type Layer = {
   size: number;
   /** CSS border-radius value. */
   borderRadius: string;
+  /** CSS blend mode for the layer. */
+  blendMode: BlendMode;
 };
 
 /**
@@ -110,6 +133,7 @@ const makeLayer = (
     size: randomNumber(50, 90),
     blur: [randomNumber(80, 180)],
     borderRadius: generateOrganicRadius(),
+    blendMode: "normal",
   };
 };
 

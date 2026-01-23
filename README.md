@@ -52,7 +52,7 @@ A beautiful and intuitive mesh gradient generator built with Nuxt 4. Create stun
 
 ---
 
-### [ ] Blend mode selection per layer
+### [x] Blend mode selection per layer
 
 **Goal:** Allow users to choose CSS blend modes (e.g., `multiply`, `screen`, `overlay`).
 

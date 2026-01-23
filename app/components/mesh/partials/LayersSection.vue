@@ -6,10 +6,29 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/vue";
 
-import { maxLayerCount } from "~/composables/useMeshGradient";
+import { maxLayerCount, type BlendMode } from "~/composables/useMeshGradient";
 
 const { config, duplicateLayer, removeLayer, copyTextLayer } =
   useMeshGradient();
+
+const blendModes: { value: BlendMode; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "multiply", label: "Multiply" },
+  { value: "screen", label: "Screen" },
+  { value: "overlay", label: "Overlay" },
+  { value: "darken", label: "Darken" },
+  { value: "lighten", label: "Lighten" },
+  { value: "color-dodge", label: "Color Dodge" },
+  { value: "color-burn", label: "Color Burn" },
+  { value: "hard-light", label: "Hard Light" },
+  { value: "soft-light", label: "Soft Light" },
+  { value: "difference", label: "Difference" },
+  { value: "exclusion", label: "Exclusion" },
+  { value: "hue", label: "Hue" },
+  { value: "saturation", label: "Saturation" },
+  { value: "color", label: "Color" },
+  { value: "luminosity", label: "Luminosity" },
+];
 </script>
 
 <template>
@@ -103,6 +122,28 @@ const { config, duplicateLayer, removeLayer, copyTextLayer } =
                   :min="0"
                   :max="100"
                 />
+              </div>
+
+              <div class="space-y-1">
+                <div class="text-muted-foreground text-xs">
+                  <span>Blend Mode</span>
+                </div>
+
+                <Select v-model="config!.layers![index]!.blendMode">
+                  <SelectTrigger class="h-8 w-full text-xs">
+                    <SelectValue placeholder="Select blend mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="mode in blendModes"
+                      :key="mode.value"
+                      :value="mode.value"
+                      class="text-xs"
+                    >
+                      {{ mode.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div class="flex w-full flex-wrap gap-1">
