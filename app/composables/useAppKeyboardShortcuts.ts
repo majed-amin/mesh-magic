@@ -7,7 +7,7 @@ import { onKeyStroke } from "@vueuse/core";
  */
 export function useAppKeyboardShortcuts() {
   const { registerKeyStroke, toggleHelpDialog } = useKeyboardShortcuts();
-  const { config, addLayer, removeLayer, randomize, reset, showDots } = useMeshGradient();
+  const { config, addLayer, removeLayer, randomize, reset, showDots, undo, redo, canUndo, canRedo } = useMeshGradient();
   const { saveGradient, loadFromStorage } = useSavedGradients();
 
   // Load saved gradients on initialization
@@ -17,9 +17,59 @@ export function useAppKeyboardShortcuts() {
    * Registers all application keyboard shortcuts.
    */
   const setupShortcuts = () => {
+    /**
+     * Checks if the user is currently typing in an input field.
+     */
+    const isTypingInInput = (): boolean => {
+      const activeElement = document.activeElement;
+      if (!activeElement) return false;
+      
+      const tagName = activeElement.tagName.toLowerCase();
+      return (
+        tagName === "input" ||
+        tagName === "textarea" ||
+        activeElement.getAttribute("contenteditable") === "true"
+      );
+    };
+
     // Show keyboard shortcuts help (?)
     registerKeyStroke("?", () => {
       toggleHelpDialog();
+    });
+
+    // Undo (Ctrl+Z / Cmd+Z) and Redo (Ctrl+Shift+Z / Cmd+Shift+Z)
+    onKeyStroke("z", (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        // Don't interfere with native undo/redo in inputs
+        if (isTypingInInput()) return;
+        
+        e.preventDefault();
+        
+        // Check for Shift key for redo
+        if (e.shiftKey) {
+          if (canRedo.value) {
+            redo();
+          }
+        } else {
+          if (canUndo.value) {
+            undo();
+          }
+        }
+      }
+    });
+
+    // Redo (Ctrl+Y / Cmd+Y)
+    onKeyStroke("y", (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        // Don't interfere with native redo in inputs
+        if (isTypingInInput()) return;
+        
+        e.preventDefault();
+        
+        if (canRedo.value) {
+          redo();
+        }
+      }
     });
 
     // Save gradient (Ctrl+S / Cmd+S)
@@ -27,14 +77,7 @@ export function useAppKeyboardShortcuts() {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         
-        // Don't trigger when typing
-        const activeElement = document.activeElement;
-        if (activeElement && (
-          activeElement.tagName.toLowerCase() === "input" ||
-          activeElement.tagName.toLowerCase() === "textarea"
-        )) {
-          return;
-        }
+        if (isTypingInInput()) return;
         
         saveGradient(config.value);
       }
@@ -42,14 +85,7 @@ export function useAppKeyboardShortcuts() {
 
     // Randomize gradient (R) / Reset (Ctrl+R / Cmd+R)
     onKeyStroke("r", (e: KeyboardEvent) => {
-      // Don't trigger when typing
-      const activeElement = document.activeElement;
-      if (activeElement && (
-        activeElement.tagName.toLowerCase() === "input" ||
-        activeElement.tagName.toLowerCase() === "textarea"
-      )) {
-        return;
-      }
+      if (isTypingInInput()) return;
       
       // Check if Ctrl/Cmd is pressed for reset
       if (e.ctrlKey || e.metaKey) {
@@ -68,6 +104,8 @@ export function useAppKeyboardShortcuts() {
 
     // Add new layer (A)
     registerKeyStroke("a", () => {
+      if (isTypingInInput()) return;
+      
       if (config.value.layers.length >= 8) {
         toast.error("Maximum layers reached", {
           description: "You can have up to 8 layers",
@@ -82,6 +120,8 @@ export function useAppKeyboardShortcuts() {
 
     // Delete last layer (Backspace / Delete)
     registerKeyStroke("Backspace", () => {
+      if (isTypingInInput()) return;
+      
       if (config.value.layers.length <= 1) {
         toast.error("Cannot delete layer", {
           description: "At least one layer is required",
@@ -96,6 +136,8 @@ export function useAppKeyboardShortcuts() {
     });
 
     registerKeyStroke("Delete", () => {
+      if (isTypingInInput()) return;
+      
       if (config.value.layers.length <= 1) {
         toast.error("Cannot delete layer", {
           description: "At least one layer is required",
