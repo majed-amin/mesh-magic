@@ -5,6 +5,10 @@ import type { ColorValue } from "~/components/ui/color-picker/types";
 import { themes } from "~/utils/themes";
 import { copyTextClient } from "~/utils/copy";
 import { toPng, toJpeg, toSvg } from "html-to-image";
+import {
+  encodeGradientConfig,
+  decodeGradientConfig,
+} from "~/utils/shareGradient";
 
 const BASE_COLOR = "#020617";
 const DEFAULT_LAYER_COUNT = 4;
@@ -373,6 +377,47 @@ export function useMeshGradient() {
     });
   };
 
+  /**
+   * Generates a shareable URL with the current gradient configuration.
+   * @returns The shareable URL string.
+   */
+  const generateShareUrl = () => {
+    const encoded = encodeGradientConfig(config.value);
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}?g=${encoded}`;
+  };
+
+  /**
+   * Copies the shareable URL to the clipboard.
+   */
+  const copyShareUrl = async () => {
+    const url = generateShareUrl();
+    await copyTextClient(url);
+    toast.success("Share link copied", {
+      description: "Link copied to clipboard",
+    });
+  };
+
+  /**
+   * Loads a gradient configuration from a URL parameter.
+   * @param encoded - The encoded gradient configuration from URL.
+   * @returns True if successfully loaded, false otherwise.
+   */
+  const loadFromUrl = (encoded: string): boolean => {
+    const decoded = decodeGradientConfig(encoded);
+    if (!decoded) {
+      toast.error("Failed to load gradient", {
+        description: "The share link is invalid or corrupted",
+      });
+      return false;
+    }
+    config.value = decoded;
+    toast.success("Gradient loaded", {
+      description: "Loaded from share link",
+    });
+    return true;
+  };
+
   return {
     config,
     showDots,
@@ -386,5 +431,8 @@ export function useMeshGradient() {
     copyTextLayer,
     copyMeshCSS,
     downloadMeshImage,
+    generateShareUrl,
+    copyShareUrl,
+    loadFromUrl,
   };
 }
