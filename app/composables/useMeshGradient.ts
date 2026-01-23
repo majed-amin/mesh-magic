@@ -505,7 +505,18 @@ export function useMeshGradient() {
       });
       return false;
     }
+    
+    // Pause history recording
+    pauseHistory();
+    
     config.value = decoded;
+    
+    // Record to history and resume
+    history.push(config.value);
+    nextTick(() => {
+      resumeHistory();
+    });
+    
     toast.success("Gradient loaded", {
       description: "Loaded from share link",
     });
