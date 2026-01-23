@@ -36,6 +36,28 @@ export type BlendMode =
   | "luminosity";
 
 /**
+ * Available blend modes with labels for UI display.
+ */
+export const BLEND_MODES: { value: BlendMode; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "multiply", label: "Multiply" },
+  { value: "screen", label: "Screen" },
+  { value: "overlay", label: "Overlay" },
+  { value: "darken", label: "Darken" },
+  { value: "lighten", label: "Lighten" },
+  { value: "color-dodge", label: "Color Dodge" },
+  { value: "color-burn", label: "Color Burn" },
+  { value: "hard-light", label: "Hard Light" },
+  { value: "soft-light", label: "Soft Light" },
+  { value: "difference", label: "Difference" },
+  { value: "exclusion", label: "Exclusion" },
+  { value: "hue", label: "Hue" },
+  { value: "saturation", label: "Saturation" },
+  { value: "color", label: "Color" },
+  { value: "luminosity", label: "Luminosity" },
+];
+
+/**
  * Represents a single layer in the mesh gradient.
  */
 export type Layer = {
@@ -260,6 +282,7 @@ export function useMeshGradient() {
     const colorHex = (layer.color?.hex ?? "#000000").toLowerCase();
     const brRaw = layer.borderRadius ?? "50%";
     const brForClass = brRaw.replace(/\s+/g, "_");
+    const blendMode = layer.blendMode ?? "normal";
 
     const classes = [
       "absolute",
@@ -269,7 +292,8 @@ export function useMeshGradient() {
       `h-[${size}px]`,
       `bg-[${colorHex}]`,
       `rounded-[${brForClass}]`,
-    ];
+      blendMode !== "normal" ? `mix-blend-[${blendMode}]` : "",
+    ].filter(Boolean);
 
     const classString = classes.join(" ");
     const htmlSnippet = `<div class="${classString}"></div>`;
